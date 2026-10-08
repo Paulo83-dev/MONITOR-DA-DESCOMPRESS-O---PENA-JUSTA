@@ -289,6 +289,48 @@ td.codigo { font-family: var(--font-mono), monospace; font-size: 0.875rem; white
 .item-linha .corpo { display: grid; gap: 0.3rem; min-width: 0; font: 400 0.9375rem/1.5 var(--font-ui), system-ui, sans-serif; }
 .item-linha h4 { font-size: 1.0625rem; }
 
+/* ---------- fórum e moderação ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.form-forum { display: grid; gap: 1rem; font: 400 1rem/1.5 var(--font-ui), system-ui, sans-serif; }
+.campo { display: grid; gap: 0.35rem; min-width: 0; }
+.campo label { font-weight: 600; font-size: 0.9375rem; }
+.campo-linha { display: flex; align-items: center; gap: 0.5rem; }
+.campo-linha label { font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+input[type="text"], input[type="password"], input:not([type]), select, textarea {
+  font: inherit; font-size: 1rem; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 0.6rem 0.75rem; width: 100%; min-width: 0;
+}
+select { width: auto; max-width: 100%; }
+.campo select { width: 100%; }
+textarea { resize: vertical; line-height: 1.5; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--warm-fill); outline-offset: 1px; border-color: var(--fg); }
+.dica { font-size: 0.8125rem; color: var(--muted); line-height: 1.45; }
+.marcar { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.9375rem; line-height: 1.45; cursor: pointer; }
+.marcar input { width: 1.1rem; height: 1.1rem; margin-top: 0.2rem; accent-color: var(--accent); flex: none; }
+.armadilha { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.msg-erro { color: var(--alert); font: 500 0.9375rem/1.45 var(--font-ui), system-ui, sans-serif; }
+.msg-aviso { color: var(--fg); background: var(--warm-soft); border: 1px solid var(--warm-fill); border-radius: var(--radius); padding: 0.7rem 0.9rem; font: 400 0.9375rem/1.45 var(--font-ui), system-ui, sans-serif; }
+.forum-filtros { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center; justify-content: space-between; }
+.topicos { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.topico { display: grid; gap: 0.35rem; padding: 1rem 0.25rem; border-bottom: 1px solid var(--line); color: var(--fg); text-decoration: none; }
+.topico:hover { background: var(--sunk); }
+.topico h3 { font-size: 1.15rem; }
+.topico-meta { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; align-items: center; font: 400 0.8125rem var(--font-ui), system-ui, sans-serif; color: var(--muted); }
+.mensagens { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.mensagem { display: grid; gap: 0.5rem; padding: 1.1rem 0.25rem; border-bottom: 1px solid var(--line); scroll-margin-top: 5rem; }
+.mensagem.da-moderacao { background: var(--warm-soft); padding-inline: 0.75rem; border-radius: 4px; }
+.mensagem-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.75rem; font: 400 0.875rem var(--font-ui), system-ui, sans-serif; }
+.mensagem-topo strong { font-weight: 650; }
+.mensagem-texto { display: grid; gap: 0.7rem; font-size: 1.0625rem; line-height: 1.6; overflow-wrap: anywhere; }
+.mensagem-texto a { word-break: break-all; }
+.mensagem-removida { font-style: italic; }
+.mensagem-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.denuncia-form { display: inline-flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.denuncia-form select { font-size: 0.875rem; padding: 0.4rem 0.5rem; }
+.mod-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.mod-cartao { display: grid; gap: 0.6rem; padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.mod-corpo { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.55; background: var(--sunk); padding: 0.75rem 0.9rem; border-radius: 4px; }
+
 @media (max-width: 860px) {
   .duas-colunas, .mapa-bloco { grid-template-columns: minmax(0, 1fr); }
   .entradas { grid-template-columns: minmax(0, 1fr); }

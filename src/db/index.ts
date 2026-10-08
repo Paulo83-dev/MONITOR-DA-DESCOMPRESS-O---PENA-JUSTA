@@ -1,5 +1,5 @@
 import "server-only";
-import { garantirEsquema, type Executor } from "./esquema";
+import { MIGRACOES, garantirEsquema, type Executor } from "./esquema";
 
 export class SemBanco extends Error {
   constructor() {
@@ -8,7 +8,8 @@ export class SemBanco extends Error {
   }
 }
 
-type Global = typeof globalThis & { __mdjBanco?: Promise<Executor> };
+type Banco = { exec: Promise<Executor>; esquema: number };
+type Global = typeof globalThis & { __mdjBanco?: Banco };
 
 function urlDoBanco() {
   return process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
@@ -42,11 +43,18 @@ async function iniciar(): Promise<Executor> {
 export async function consulta<T = Record<string, unknown>>(texto: string, params: unknown[] = []): Promise<T[]> {
   const g = globalThis as Global;
   if (!g.__mdjBanco) {
-    g.__mdjBanco = iniciar().catch((e) => {
+    const exec = iniciar().catch((e) => {
       g.__mdjBanco = undefined;
       throw e;
     });
+    g.__mdjBanco = { exec, esquema: MIGRACOES.length };
   }
-  const exec = await g.__mdjBanco;
+  const banco = g.__mdjBanco;
+  const exec = await banco.exec;
+  // Em desenvolvimento a conexão sobrevive a recargas de código: aplica migrações que apareceram depois.
+  if (banco.esquema !== MIGRACOES.length) {
+    banco.esquema = MIGRACOES.length;
+    await garantirEsquema(exec);
+  }
   return (await exec(texto, params)) as T[];
 }
