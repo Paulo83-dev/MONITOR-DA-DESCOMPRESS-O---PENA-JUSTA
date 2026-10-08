@@ -1,0 +1,1425 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sala de Descompressão Pena Justa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: coluna de leitura de ~68ch; o simulador 3D e as tabelas abrem para 1180px; cabeçalho fino e fixo com o índice das seções. */
+:root {
+  --bg: #F2F5F5;
+  --surface: #FFFFFF;
+  --sunk: #E3EAEA;
+  --fg: #16252A;
+  --muted: #53656A;
+  --line: #CBD6D7;
+  --accent: #28666B;
+  --accent-soft: #D6E7E7;
+  --on-accent: #FFFFFF;
+  --warm: #9E5F12;
+  --warm-fill: #C98A2B;
+  --warm-soft: #F4E4CD;
+  --scene-bg: #D9E3E3;
+  --hs-ring: rgba(255, 255, 255, .92);
+  --shadow: 0 10px 28px rgba(16, 37, 42, .16);
+  --font-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-ui: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1719; --surface: #152225; --sunk: #1B2A2D; --fg: #E1E9EA; --muted: #95A7AB; --line: #2A3B3F;
+    --accent: #7DBDBF; --accent-soft: #1E393B; --on-accent: #0E1719; --warm: #E7AC57; --warm-fill: #D99A3E; --warm-soft: #3A2B16;
+    --scene-bg: #17262A; --hs-ring: rgba(14, 23, 25, .92); --shadow: 0 10px 28px rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1719; --surface: #152225; --sunk: #1B2A2D; --fg: #E1E9EA; --muted: #95A7AB; --line: #2A3B3F;
+  --accent: #7DBDBF; --accent-soft: #1E393B; --on-accent: #0E1719; --warm: #E7AC57; --warm-fill: #D99A3E; --warm-soft: #3A2B16;
+  --scene-bg: #17262A; --hs-ring: rgba(14, 23, 25, .92); --shadow: 0 10px 28px rgba(0, 0, 0, .45);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 1.0625rem/1.65 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+a { color: var(--accent); text-underline-offset: .18em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--warm-fill); outline-offset: 2px; }
+
+.wrap { width: 100%; max-width: 1180px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
+.read { max-width: 68ch; }
+h1, h2, h3 { font-family: var(--font-display); font-stretch: 80%; line-height: 1.08; text-wrap: balance; margin: 0; color: var(--fg); }
+h1 { font-size: clamp(2.35rem, 6.2vw, 4.1rem); font-weight: 780; letter-spacing: -.012em; }
+h2 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); font-weight: 740; letter-spacing: -.006em; }
+h3 { font-size: 1.125rem; font-weight: 680; font-stretch: 92%; line-height: 1.25; }
+p { margin: 0; }
+.eyebrow { font: 600 .8125rem/1.3 var(--font-ui); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 1rem; }
+
+/* ---------- cabeçalho ---------- */
+.site-head {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.site-head .wrap { display: flex; align-items: center; gap: 1.25rem; min-height: 3.25rem; }
+.brand { font: 700 .9375rem/1.2 var(--font-ui); font-stretch: 85%; white-space: nowrap; color: var(--fg); text-decoration: none; display: flex; gap: .5rem; align-items: center; }
+.brand .code { font: 500 .75rem var(--font-mono); color: var(--muted); }
+.site-nav { margin-left: auto; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.site-nav::-webkit-scrollbar { display: none; }
+.site-nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: .2rem; }
+.site-nav a { display: block; padding: .4rem .6rem; font: 500 .875rem var(--font-ui); color: var(--muted); text-decoration: none; border-radius: 4px; white-space: nowrap; }
+.site-nav a:hover { color: var(--fg); background: var(--sunk); }
+
+/* ---------- abertura ---------- */
+.hero { padding-block: clamp(2.5rem, 6vw, 4.5rem) 2.5rem; display: grid; gap: 1.4rem; }
+.hero .lead { font-size: 1.25rem; line-height: 1.55; max-width: 60ch; color: var(--fg); }
+.figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin: .75rem 0 0; }
+.figures div { border-top: 2px solid var(--fg); padding-top: .75rem; display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.figures dt { font: 760 clamp(2rem, 4.6vw, 3rem)/1 var(--font-display); font-stretch: 72%; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.figures dt.mono { font: 500 clamp(1.35rem, 3vw, 1.9rem)/1.15 var(--font-mono); letter-spacing: -.02em; padding-top: .3rem; }
+.figures dd { margin: 0; font: 400 .9375rem/1.45 var(--font-ui); color: var(--muted); }
+.cta-row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+.cta {
+  display: inline-flex; align-items: center; gap: .5rem; padding: .7rem 1.15rem;
+  background: var(--accent); color: var(--on-accent); text-decoration: none; border-radius: 999px;
+  font: 600 .9375rem var(--font-ui);
+}
+.cta:hover { filter: brightness(1.08); }
+.cta svg { width: 1rem; height: 1rem; }
+
+/* ---------- seções ---------- */
+.section { padding-block: clamp(2.75rem, 6vw, 4rem); border-top: 1px solid var(--line); }
+.section-head { display: grid; gap: .6rem; margin-bottom: 1.75rem; }
+.section-head p { max-width: 68ch; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+.cols > * { min-width: 0; }
+
+.axes { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.axes li { display: grid; grid-template-columns: 4.5rem 1fr; gap: .75rem; padding: .8rem 0; border-bottom: 1px solid var(--line); font-family: var(--font-ui); font-size: .9375rem; line-height: 1.45; }
+.axes .ax { font: 500 .75rem var(--font-mono); color: var(--muted); padding-top: .15rem; letter-spacing: .02em; }
+.axes li.is-here { background: var(--accent-soft); margin-inline: -.75rem; padding-inline: .75rem; border-radius: 4px; }
+.axes li.is-here .ax { color: var(--accent); }
+.axes strong { font-weight: 650; }
+
+/* cadeia da matriz */
+.chain { list-style: none; margin: 0; padding: 0; position: relative; }
+.chain li { position: relative; padding: 0 0 1.15rem 1.6rem; }
+.chain li::before { content: ""; position: absolute; left: .32rem; top: .55rem; bottom: -.55rem; width: 2px; background: var(--line); }
+.chain li:last-child::before { display: none; }
+.chain li::after { content: ""; position: absolute; left: 0; top: .3rem; width: .7rem; height: .7rem; border-radius: 50%; background: var(--bg); border: 2px solid var(--muted); }
+.chain li:last-child::after { background: var(--accent); border-color: var(--accent); }
+.chain .lvl { display: block; font: 500 .75rem/1.3 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: .15rem; }
+.chain .txt { font-size: 1.0625rem; line-height: 1.45; }
+.chain li:last-child .txt { font-weight: 600; }
+
+/* ficha no formato da matriz */
+.ficha { border: 1px solid var(--fg); border-radius: 3px; background: var(--surface); font-family: var(--font-ui); font-size: .9375rem; line-height: 1.45; overflow: hidden; }
+.ficha-head { background: var(--fg); color: var(--bg); padding: .7rem .9rem; font: 600 .75rem/1.45 var(--font-ui); letter-spacing: .05em; text-transform: uppercase; }
+.ficha-row { display: grid; grid-template-columns: 8.5rem 1fr; gap: .75rem; padding: .7rem .9rem; border-top: 1px solid var(--line); }
+.ficha-row:first-of-type { border-top: 0; }
+.ficha-row > span:first-child { font-weight: 650; color: var(--muted); font-size: .8125rem; text-transform: uppercase; letter-spacing: .04em; padding-top: .1rem; }
+.ficha-metas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.ficha-metas div { padding: .65rem .9rem; border-left: 1px solid var(--line); display: grid; gap: .1rem; }
+.ficha-metas div:first-child { border-left: 0; }
+.ficha-metas span { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.ficha-metas b { font: 700 1.35rem/1.1 var(--font-display); font-stretch: 78%; font-variant-numeric: tabular-nums; }
+.ficha-code { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .75rem .9rem; border-top: 1px solid var(--fg); background: var(--sunk); }
+.ficha-code span { font-size: .8125rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-weight: 650; }
+.ficha-code b { font: 500 1.25rem var(--font-mono); letter-spacing: -.01em; }
+
+.quote { margin: 0; padding: .2rem 0 .2rem 1.1rem; border-left: 3px solid var(--warm-fill); }
+.quote p { font-style: italic; font-size: 1.125rem; line-height: 1.5; }
+.quote cite { display: block; margin-top: .4rem; font: 400 .8125rem var(--font-ui); font-style: normal; color: var(--muted); }
+
+/* tabelas */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font: 400 .9375rem/1.45 var(--font-ui); font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: .65rem .85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 650; font-size: .8125rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); background: var(--sunk); }
+tr:last-child td { border-bottom: 0; }
+td.code { font-family: var(--font-mono); font-size: .875rem; white-space: nowrap; }
+td.num { white-space: nowrap; }
+
+/* gráfico de barras */
+.chart { display: grid; gap: .55rem; font-family: var(--font-ui); }
+.bar-row { display: grid; grid-template-columns: minmax(10rem, 15rem) minmax(0, 1fr); gap: .9rem; align-items: center; }
+.bar-label { font-size: .9375rem; line-height: 1.3; }
+.bar-label small { display: block; color: var(--muted); font-size: .8125rem; }
+.track {
+  position: relative; height: 1.9rem; border-left: 1px solid var(--fg);
+  background-image: repeating-linear-gradient(to right, transparent 0, transparent calc(100% / 6 - 1px), var(--line) calc(100% / 6 - 1px), var(--line) calc(100% / 6));
+}
+.fill { position: absolute; left: 0; top: .3rem; bottom: .3rem; width: calc(var(--v) / 60 * 100%); border-radius: 0 3px 3px 0; }
+.fill.meta { border: 1.5px dashed var(--muted); border-left: 0; background: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--muted) 18%, transparent) 5px 7px); }
+.fill.real { background: var(--accent); }
+.fill.sp { background: var(--warm-fill); }
+.val { position: absolute; top: 50%; transform: translateY(-50%); left: calc(var(--v) / 60 * 100% + .45rem); font: 600 .875rem var(--font-ui); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.val.inside { left: auto; right: calc(100% - var(--v) / 60 * 100% + .45rem); color: #1C1206; }
+.axis-row { display: grid; grid-template-columns: minmax(10rem, 15rem) minmax(0, 1fr); gap: .9rem; }
+.axis { position: relative; height: 1.2rem; font: 400 .75rem var(--font-mono); color: var(--muted); }
+.axis span { position: absolute; transform: translateX(-50%); }
+.axis span:first-child { transform: none; }
+.axis span:last-child { transform: translateX(-100%); }
+.legend { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; font: 400 .8125rem var(--font-ui); color: var(--muted); margin-top: .4rem; }
+.legend i { display: inline-block; width: 1.4rem; height: .7rem; margin-right: .35rem; vertical-align: -.05rem; border-radius: 2px; }
+.legend .l-meta { border: 1.5px dashed var(--muted); }
+.legend .l-real { background: var(--accent); }
+.legend .l-sp { background: var(--warm-fill); }
+
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.chip { display: inline-flex; align-items: center; gap: .3rem; font: 600 .8125rem var(--font-mono); padding: .2rem .55rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); }
+.chip.ok { border-color: var(--accent); background: var(--accent-soft); color: var(--fg); }
+.chip.ok::before { content: ""; width: .45rem; height: .45rem; border-radius: 50%; background: var(--accent); }
+
+.note { border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius); padding: 1.1rem 1.25rem; display: grid; gap: .5rem; }
+.note h3 { font-size: 1.0625rem; }
+.note p { font: 400 .9375rem/1.55 var(--font-ui); }
+.note.warn { border-color: var(--warm-fill); background: var(--warm-soft); }
+
+/* ---------- simulador ---------- */
+.sim-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-bottom: .75rem; }
+.sim-bar .lbl, .tools .lbl { font: 600 .75rem var(--font-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-right: .25rem; }
+.btn {
+  appearance: none; font: 500 .875rem/1 var(--font-ui); padding: .55rem .85rem; min-height: 2.25rem;
+  border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: .4rem; white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); }
+.btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn-sm { padding: .45rem .7rem; min-height: 2rem; font-size: .8125rem; }
+.seg { display: inline-flex; align-items: center; gap: .3rem; flex-wrap: wrap; }
+.tools { display: flex; flex-wrap: wrap; gap: .6rem 1.25rem; align-items: center; margin-top: .75rem; }
+
+.viewer {
+  position: relative; width: 100%; aspect-ratio: 16 / 10; max-height: 80vh;
+  background: var(--scene-bg); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line);
+  user-select: none; -webkit-user-select: none;
+}
+.viewer canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; cursor: grab; }
+.viewer canvas:active { cursor: grabbing; }
+.viewer.walking canvas { cursor: crosshair; }
+.overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.hs {
+  pointer-events: auto; position: absolute; left: 0; top: 0; width: 28px; height: 28px; margin: -14px 0 0 -14px;
+  border-radius: 50%; border: 2px solid var(--hs-ring); background: var(--accent); color: var(--on-accent);
+  font: 650 .8125rem/1 var(--font-ui); font-variant-numeric: tabular-nums; cursor: pointer; padding: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .28); transition: opacity .2s, background-color .2s; will-change: transform;
+}
+.hs:hover { filter: brightness(1.12); }
+.hs.is-behind { opacity: .38; }
+.hs.is-off { visibility: hidden; }
+.hs[aria-pressed="true"] { background: var(--warm-fill); color: #1C1206; }
+.overlay.no-hs .hs { display: none; }
+.dim-label { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); background: #D58F25; color: #1C1206; font: 600 .75rem/1 var(--font-mono); padding: .3rem .45rem; border-radius: 3px; white-space: nowrap; pointer-events: none; }
+.dim-label.is-off { visibility: hidden; }
+
+.status { position: absolute; inset: 0; display: grid; place-items: center; padding: 1.5rem; text-align: center; font: 500 .9375rem/1.5 var(--font-ui); color: var(--muted); background: var(--scene-bg); }
+.status.is-error p { max-width: 46ch; }
+.card3d {
+  position: absolute; left: 12px; bottom: 12px; width: min(360px, calc(100% - 24px)); max-height: calc(100% - 24px); overflow: auto;
+  background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: .9rem 1rem 1rem; font: 400 .9rem/1.5 var(--font-ui); display: grid; gap: .45rem;
+}
+.card3d-head { display: grid; grid-template-columns: auto 1fr auto; gap: .6rem; align-items: start; }
+.card3d .c-num { width: 26px; height: 26px; border-radius: 50%; background: var(--warm-fill); color: #1C1206; display: grid; place-items: center; font: 650 .8125rem var(--font-ui); }
+.card3d h3 { font-size: 1.0625rem; padding-top: .1rem; }
+.card3d .x { border: 0; background: transparent; color: var(--muted); font-size: 1.35rem; line-height: 1; cursor: pointer; padding: 0 .2rem; }
+.card3d .x:hover { color: var(--fg); }
+.card3d .c-zone { font-size: .8125rem; color: var(--muted); }
+.card3d .c-ref { color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: .45rem; }
+.tag { font: 600 .6875rem var(--font-mono); letter-spacing: .03em; padding: .12rem .4rem; border-radius: 3px; background: var(--sunk); color: var(--muted); white-space: nowrap; }
+
+.walkpad { position: absolute; right: 12px; bottom: 12px; display: grid; grid-template-columns: repeat(3, 2.75rem); grid-template-rows: auto repeat(2, 2.75rem); gap: 6px; }
+.walkpad button { border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--fg); border-radius: 8px; font: 600 1rem var(--font-ui); cursor: pointer; touch-action: none; display: grid; place-items: center; }
+.walkpad button:active { background: var(--accent); color: var(--on-accent); }
+.walkpad .exit { grid-column: 1 / -1; font-size: .8125rem; padding: .45rem; }
+.walkpad [data-dir="f"] { grid-column: 2; grid-row: 2; }
+.walkpad [data-dir="l"] { grid-column: 1; grid-row: 3; }
+.walkpad [data-dir="b"] { grid-column: 2; grid-row: 3; }
+.walkpad [data-dir="r"] { grid-column: 3; grid-row: 3; }
+.walk-hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); background: color-mix(in srgb, var(--surface) 90%, transparent); border: 1px solid var(--line); border-radius: 999px; padding: .35rem .8rem; font: 500 .8125rem var(--font-ui); white-space: nowrap; max-width: calc(100% - 24px); overflow: hidden; text-overflow: ellipsis; }
+.sim-help { margin-top: .9rem; font: 400 .875rem/1.55 var(--font-ui); color: var(--muted); max-width: 90ch; }
+.sim-help kbd { font: 500 .75rem var(--font-mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; padding: 0 .3rem; background: var(--surface); color: var(--fg); }
+
+/* ---------- mobiliário ---------- */
+.items { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.item-row { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr) auto; gap: .4rem 1rem; padding: 1rem 0; border-bottom: 1px solid var(--line); align-items: start; }
+.item-row .num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font: 650 .8125rem var(--font-ui); font-variant-numeric: tabular-nums; margin-top: .1rem; }
+.item-body { display: grid; gap: .25rem; min-width: 0; }
+.item-body .zone { font: 400 .8125rem var(--font-ui); color: var(--muted); display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.item-body .fn { font-size: 1rem; line-height: 1.5; }
+.item-body .ref { font: 400 .875rem/1.5 var(--font-ui); color: var(--muted); }
+
+/* ---------- experiências ---------- */
+.cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.case { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.15rem 1.25rem 1.25rem; display: grid; gap: .6rem; align-content: start; min-width: 0; }
+.case-top { display: flex; align-items: baseline; gap: .75rem; }
+.case .uf { font: 500 1.5rem/1 var(--font-mono); color: var(--accent); }
+.case .when { font: 500 .8125rem var(--font-ui); color: var(--muted); margin-left: auto; white-space: nowrap; }
+.case p, .case li { font: 400 .9375rem/1.55 var(--font-ui); }
+.case ul { margin: 0; padding-left: 1.1rem; display: grid; gap: .15rem; }
+.case .src { font-size: .8125rem; color: var(--muted); }
+
+.sources { margin: 0; padding-left: 1.2rem; display: grid; gap: .45rem; font: 400 .9375rem/1.5 var(--font-ui); }
+.sources li { padding-left: .2rem; }
+.sources span { color: var(--muted); }
+.site-foot { border-top: 1px solid var(--line); padding-block: 2rem 2.5rem; font: 400 .875rem/1.55 var(--font-ui); color: var(--muted); }
+
+@media (max-width: 860px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .cases { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  body { font-size: 1rem; }
+  .figures { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .viewer { aspect-ratio: 4 / 5; max-height: 78vh; }
+  .bar-row, .axis-row { grid-template-columns: minmax(0, 1fr); gap: .3rem; }
+  .axis-row > span:first-child { display: none; }
+  .ficha-row { grid-template-columns: minmax(0, 1fr); gap: .2rem; }
+  .ficha-metas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ficha-metas div:nth-child(3) { border-left: 0; }
+  .ficha-metas div:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .item-row { grid-template-columns: 2.25rem minmax(0, 1fr); }
+  .item-row .btn { grid-column: 2; justify-self: start; }
+  .brand .code { display: none; }
+  .walk-hint { display: none; }
+  .viewer.walking .card3d { top: 12px; bottom: auto; max-height: 45%; }
+}
+@media (prefers-reduced-motion: reduce) { .hs { transition: none; } }
+</style>
+</head>
+<body>
+
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#topo">Sala de descompressão <span class="code">Pena Justa · 2.5.1.1.1.1</span></a>
+    <nav class="site-nav" aria-label="Seções">
+      <ul>
+        <li><a href="#pena-justa">Pena Justa</a></li>
+        <li><a href="#previsao">Previsão</a></li>
+        <li><a href="#monitoramento">Monitoramento</a></li>
+        <li><a href="#normas">Normas</a></li>
+        <li><a href="#simulacao">Simulação 3D</a></li>
+        <li><a href="#mobiliario">Mobiliário</a></li>
+        <li><a href="#experiencias">Estados</a></li>
+        <li><a href="#fontes">Fontes</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="topo">
+  <section class="wrap hero" aria-labelledby="titulo">
+    <p class="eyebrow">Plano Nacional Pena Justa · ADPF 347 · Eixo 2</p>
+    <h1 id="titulo">Sala de descompressão para policiais penais</h1>
+    <p class="lead">O plano federal criado para enfrentar o estado de coisas inconstitucional nas prisões brasileiras prevê espaços de descompressão para servidores e servidoras penais. Aqui estão o que o plano diz, como a meta é medida e uma simulação 3D de como essa sala pode ser montada.</p>
+    <dl class="figures">
+      <div><dt>40%</dt><dd>dos estabelecimentos prisionais com espaço de descompressão ao fim do Ano 3</dd></div>
+      <div><dt class="mono">2.5.1.1.1.1</dt><dd>código do indicador na matriz de implementação nacional</dd></div>
+      <div><dt>11,8%</dt><dd>alcançado no Ano 1, segundo o II Informe ao STF (a meta era 10%)</dd></div>
+    </dl>
+    <div class="cta-row">
+      <a class="cta" href="#simulacao">Explorar a sala em 3D
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" id="pena-justa" aria-labelledby="h-pj">
+    <div class="wrap cols">
+      <div class="stack read">
+        <p class="eyebrow">Contexto</p>
+        <h2 id="h-pj">O que é o Pena Justa</h2>
+        <p>O Pena Justa é o Plano Nacional para o Enfrentamento do Estado de Coisas Inconstitucional nas Prisões Brasileiras. O Supremo Tribunal Federal exigiu o plano ao julgar a ADPF 347, em outubro de 2023.</p>
+        <p>O Conselho Nacional de Justiça (CNJ) e o Ministério da Justiça e Segurança Pública, por meio da Secretaria Nacional de Políticas Penais (SENAPPEN), elaboraram o texto. O STF homologou o plano no fim de 2024, e ele foi lançado em fevereiro de 2025, com três anos de execução.</p>
+        <p>Cada estado e o Distrito Federal fizeram um plano local a partir da matriz nacional. Os planos estaduais repetem as metas nacionais e podem acrescentar medidas próprias.</p>
+      </div>
+      <div class="stack">
+        <p class="eyebrow">Os quatro eixos</p>
+        <ul class="axes">
+          <li><span class="ax">EIXO 1</span><span>Controle da entrada e das vagas do sistema prisional</span></li>
+          <li class="is-here"><span class="ax">EIXO 2</span><span><strong>Qualidade da ambiência, dos serviços prestados e da estrutura prisional.</strong> Inclui o problema da desvalorização dos servidores penais, onde está a sala de descompressão.</span></li>
+          <li><span class="ax">EIXO 3</span><span>Processos de saída da prisão e da reintegração social</span></li>
+          <li><span class="ax">EIXO 4</span><span>Políticas para não repetição do estado de coisas inconstitucional no sistema prisional</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="previsao" aria-labelledby="h-prev">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Previsão no plano</p>
+        <h2 id="h-prev">Do eixo ao indicador</h2>
+        <p>A matriz de implementação organiza cada compromisso em níveis. A sala de descompressão aparece como meta geral dentro da medida que trata dos espaços físicos de trabalho.</p>
+      </div>
+      <div class="cols">
+        <ol class="chain">
+          <li><span class="lvl">Eixo 2</span><span class="txt">Qualidade da ambiência, dos serviços prestados e da estrutura prisional</span></li>
+          <li><span class="lvl">Problema</span><span class="txt">Desvalorização dos(as) servidores(as) penais</span></li>
+          <li><span class="lvl">Ação mitigadora</span><span class="txt">Promover a saúde e a segurança no trabalho</span></li>
+          <li><span class="lvl">Medida</span><span class="txt">Adequar os espaços físicos com vista ao exercício profissional</span></li>
+          <li><span class="lvl">Meta geral</span><span class="txt">Criação de espaços de descompressão nos estabelecimentos prisionais aos(às) servidores(as) penais</span></li>
+          <li><span class="lvl">Indicador · 2.5.1.1.1.1</span><span class="txt">Percentual de estabelecimentos prisionais com espaço de descompressão</span></li>
+        </ol>
+
+        <div class="ficha" role="group" aria-label="Ficha do indicador na matriz nacional">
+          <div class="ficha-head">Eixo 2 · Problema: desvalorização dos(as) servidores(as) penais<br>Ação mitigadora: promover a saúde e a segurança no trabalho</div>
+          <div class="ficha-row"><span>Medida</span><span>Adequar os espaços físicos com vista ao exercício profissional</span></div>
+          <div class="ficha-row"><span>Meta geral</span><span>Criação de espaços de descompressão nos estabelecimentos prisionais aos(às) servidores(as) penais</span></div>
+          <div class="ficha-row"><span>Atores</span><span>MJSP · Secretarias estaduais de administração penitenciária ou congêneres · Escola Nacional de Serviços Penais (ESPEN) · Escolas estaduais penitenciárias</span></div>
+          <div class="ficha-row"><span>Indicador</span><span>Percentual de estabelecimentos prisionais com espaço de descompressão</span></div>
+          <div class="ficha-metas">
+            <div><span>Meta final</span><b>40%</b></div>
+            <div><span>Ano 1</span><b>10%</b></div>
+            <div><span>Ano 2</span><b>20%</b></div>
+            <div><span>Ano 3</span><b>40%</b></div>
+          </div>
+          <div class="ficha-code"><span>Código do indicador</span><b>2.5.1.1.1.1</b></div>
+        </div>
+      </div>
+
+      <div class="cols" style="margin-top: 2.5rem;">
+        <div class="stack read">
+          <h3>Por que o plano trata disso</h3>
+          <p>No diagnóstico (item 3.2.5, p. 133), o plano aponta a falta de programas de segurança no trabalho e de atenção à saúde do servidor, sobretudo à saúde mental. Por isso defende investir no bem-estar dos servidores, inclusive adequando os espaços físicos das unidades.</p>
+          <p>Ao detalhar a ação mitigadora (pp. 167–168), o texto lembra que as condições degradantes do cárcere também atingem quem trabalha na custódia. Também pede atenção às servidoras penais, que muitas vezes não encontram espaços adequados nas unidades.</p>
+        </div>
+        <div class="stack">
+          <blockquote class="quote">
+            <p>“condições apropriadas para a realização de refeições, descanso e para mitigar as tensões”</p>
+            <cite>Plano Nacional Pena Justa, p. 168, sobre os espaços de trabalho dos servidores penais</cite>
+          </blockquote>
+          <div class="tbl-wrap">
+            <table>
+              <caption class="muted" style="caption-side: bottom; text-align: left; padding: .6rem .85rem; font-size: .8125rem;">Indicadores da mesma ação mitigadora na matriz nacional.</caption>
+              <thead><tr><th>Código</th><th>Indicador</th><th>Metas</th></tr></thead>
+              <tbody>
+                <tr><td class="code">2.5.1.1.1.1</td><td>Estabelecimentos com espaço de descompressão</td><td class="num">10% · 20% · 40%</td></tr>
+                <tr><td class="code">2.5.1.1.2.1</td><td>Estabelecimentos com espaço adequado para refeições</td><td class="num">30% · 60% · 100%</td></tr>
+                <tr><td class="code">2.5.1.2.1.1</td><td>Núcleos de Saúde e Qualidade de Vida implantados (saúde mental)</td><td class="num">por UF</td></tr>
+                <tr><td class="code">2.5.1.2.2.1</td><td>Política de Saúde Integral dos Trabalhadores do Sistema Prisional</td><td class="num">ato normativo</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="font: 400 .875rem/1.5 var(--font-ui);">O refeitório tem indicador próprio. A sala de descompressão é um espaço separado, voltado ao descanso e ao alívio do estresse.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="monitoramento" aria-labelledby="h-mon">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Monitoramento</p>
+        <h2 id="h-mon">Metas por ano e o que já foi apurado</h2>
+        <p>O CNJ envia informes periódicos ao STF. O II Informe de Monitoramento, de agosto de 2026, avaliou o primeiro ano de execução (2025) com base nos dados e documentos enviados pelos estados.</p>
+      </div>
+      <div class="cols">
+        <div class="stack">
+          <figure class="chart" style="margin: 0;" aria-label="Percentual de estabelecimentos prisionais com espaço de descompressão">
+            <div class="bar-row"><div class="bar-label">Meta do Ano 1<small>2025</small></div><div class="track"><div class="fill meta" style="--v: 10"></div><span class="val" style="--v: 10">10%</span></div></div>
+            <div class="bar-row"><div class="bar-label">Meta do Ano 2<small>2026</small></div><div class="track"><div class="fill meta" style="--v: 20"></div><span class="val" style="--v: 20">20%</span></div></div>
+            <div class="bar-row"><div class="bar-label">Meta do Ano 3<small>2027, meta final</small></div><div class="track"><div class="fill meta" style="--v: 40"></div><span class="val" style="--v: 40">40%</span></div></div>
+            <div class="bar-row"><div class="bar-label">Brasil, apurado no Ano 1<small>II Informe ao STF</small></div><div class="track"><div class="fill real" style="--v: 11.8"></div><span class="val" style="--v: 11.8">11,8%</span></div></div>
+            <div class="bar-row"><div class="bar-label">São Paulo<small>índice informado no plano estadual</small></div><div class="track"><div class="fill sp" style="--v: 55.19"></div><span class="val inside" style="--v: 55.19">55,19%</span></div></div>
+            <div class="axis-row" aria-hidden="true"><span></span><div class="axis"><span style="left:0">0</span><span style="left:16.667%">10</span><span style="left:33.333%">20</span><span style="left:50%">30</span><span style="left:66.667%">40</span><span style="left:83.333%">50</span><span style="left:100%">60%</span></div></div>
+            <figcaption class="legend"><span><i class="l-meta"></i>Meta nacional</span><span><i class="l-real"></i>Apurado no país</span><span><i class="l-sp"></i>Exemplo estadual</span></figcaption>
+          </figure>
+        </div>
+        <div class="stack">
+          <h3>O que o II Informe registrou</h3>
+          <p style="font-family: var(--font-ui); font-size: .9375rem;">Oito unidades da federação disseram ter espaços de descompressão:</p>
+          <div class="chips" aria-label="UFs que informaram ter espaços de descompressão">
+            <span class="chip">AC</span><span class="chip">AM</span><span class="chip ok">CE</span><span class="chip">DF</span><span class="chip ok">MG</span><span class="chip">PR</span><span class="chip ok">SP</span><span class="chip">SE</span>
+          </div>
+          <p style="font-family: var(--font-ui); font-size: .9375rem;">Só Ceará, Minas Gerais e São Paulo (destacados) enviaram documentos. Com isso, o país chegou a 11,8% e o indicador foi considerado implementado para o Ano 1.</p>
+          <div class="note warn">
+            <h3>Ainda longe da maioria das unidades</h3>
+            <p>O próprio informe afirma que os espaços de descompressão e os espaços de alimentação ainda estão distantes da realidade da maior parte dos estabelecimentos do país.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="normas" aria-labelledby="h-normas">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Normas de apoio</p>
+        <h2 id="h-normas">O que o plano não define</h2>
+      </div>
+      <div class="cols">
+        <div class="stack read">
+          <div class="note">
+            <h3>Sem padrão nacional de tamanho ou mobiliário</h3>
+            <p>O Pena Justa fixa a meta e o indicador, mas não define área mínima, layout nem lista de móveis. Até outubro de 2026 não localizamos nota técnica do CNJ, da SENAPPEN ou do CNPCP com esse detalhamento. Cada estado define o projeto da própria sala.</p>
+          </div>
+          <p>As Diretrizes Básicas para Arquitetura Penal (Resolução CNPCP nº 9/2011) são a referência nacional para projetos de unidades. Elas preveem ambientes para os agentes, mas nenhum deles é uma sala de descompressão. A sala é, portanto, um espaço adicional, diferente do dormitório e do refeitório.</p>
+          <p>As normas regulamentadoras do trabalho NR-24 (condições sanitárias e de conforto) e NR-17 (ergonomia e pausas) costumam servir de referência técnica, como fez o estudo da UFAL descrito mais abaixo.</p>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <caption class="muted" style="caption-side: bottom; text-align: left; padding: .6rem .85rem; font-size: .8125rem;">Ambientes para agentes nas Diretrizes Básicas para Arquitetura Penal (CNPCP, 2011).</caption>
+            <thead><tr><th>Ambiente</th><th>Área mínima</th><th>Observação</th></tr></thead>
+            <tbody>
+              <tr><td>Dormitório dos agentes</td><td class="num">3,60 m² por beliche</td><td>Dimensionado para 5% do efetivo (60% masculino, 40% feminino)</td></tr>
+              <tr><td>Vestiários masculino e feminino</td><td class="num">conforme projeto</td><td>Podem incluir instalações sanitárias</td></tr>
+              <tr><td>Sala para agentes</td><td class="num">9,00 m²</td><td>Módulo de agentes penitenciários</td></tr>
+              <tr><td>Sala de chefia dos agentes</td><td class="num">9,00 m²</td><td>Módulo de agentes penitenciários</td></tr>
+              <tr><td>Instalação sanitária para agentes</td><td class="num">2,25 m²</td><td>Módulo de agentes penitenciários</td></tr>
+              <tr><td>Refeitório para agentes e funcionários</td><td class="num">sem área fixa</td><td>Módulo de serviços</td></tr>
+              <tr><td>Alojamento</td><td class="num">sem área fixa</td><td>De preferência junto à entrada da unidade</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="simulacao" aria-labelledby="h-sim">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Simulação 3D</p>
+        <h2 id="h-sim">Como a sala pode ser</h2>
+        <p>Uma sala de 6,0 × 4,0 m (24 m²) e 2,80 m de pé-direito, perto dos 22 m² da sala do CDP de Vila Independência (SP). O mobiliário reúne itens comprados pelo Rio Grande do Norte, usados em São Paulo e no Acre e recomendados pelo estudo da UFAL. É uma simulação ilustrativa, não um projeto oficial.</p>
+      </div>
+
+      <div class="sim-bar" role="group" aria-label="Vistas da sala">
+        <span class="lbl">Vistas</span>
+        <button class="btn btn-sm" type="button" data-view="geral" aria-pressed="true">Visão geral</button>
+        <button class="btn btn-sm" type="button" data-view="descanso" aria-pressed="false">Descanso e TV</button>
+        <button class="btn btn-sm" type="button" data-view="jogos" aria-pressed="false">Convivência</button>
+        <button class="btn btn-sm" type="button" data-view="exercicio" aria-pressed="false">Exercício</button>
+        <button class="btn btn-sm" type="button" data-view="leitura" aria-pressed="false">Leitura</button>
+        <button class="btn btn-sm" type="button" data-view="planta" aria-pressed="false">Planta baixa</button>
+      </div>
+
+      <div class="viewer" id="viewer">
+        <canvas id="scene" tabindex="0" role="img" aria-label="Simulação 3D da sala de descompressão: área de TV com sofá e poltronas reclináveis, mesa de jogos, esteira e bicicleta, canto de leitura com cadeira de massagem e estante, armários, bebedouro e plantas."></canvas>
+        <div class="overlay" id="overlay"></div>
+        <div class="walk-hint" id="walkHint" hidden>Modo caminhar: <b>W A S D</b> ou setas para andar, arraste para olhar, <b>Esc</b> para sair</div>
+        <aside class="card3d" id="card3d" hidden aria-live="polite">
+          <div class="card3d-head">
+            <span class="c-num" id="cNum">1</span>
+            <h3 id="cTitle">Item</h3>
+            <button class="x" type="button" id="cClose" aria-label="Fechar detalhes">×</button>
+          </div>
+          <p class="c-zone"><span id="cZone"></span> · <span class="tag" id="cTag"></span></p>
+          <p id="cFn"></p>
+          <p class="c-ref" id="cRef"></p>
+        </aside>
+        <div class="walkpad" id="walkpad" hidden>
+          <button class="exit" type="button" id="walkExit">Sair do modo caminhar</button>
+          <button type="button" data-dir="f" aria-label="Andar para frente">▲</button>
+          <button type="button" data-dir="l" aria-label="Andar para a esquerda">◀</button>
+          <button type="button" data-dir="b" aria-label="Andar para trás">▼</button>
+          <button type="button" data-dir="r" aria-label="Andar para a direita">▶</button>
+        </div>
+        <div class="status" id="status">Carregando a sala em 3D…</div>
+        <noscript><div class="status">A simulação 3D precisa de JavaScript. A lista de móveis abaixo descreve cada item da sala.</div></noscript>
+      </div>
+
+      <div class="tools">
+        <div class="seg" role="group" aria-label="Iluminação">
+          <span class="lbl">Iluminação</span>
+          <button class="btn btn-sm" type="button" data-light="plantao" aria-pressed="true">Plantão</button>
+          <button class="btn btn-sm" type="button" data-light="relax" aria-pressed="false">Relaxamento</button>
+        </div>
+        <div class="seg" role="group" aria-label="Cor das paredes">
+          <span class="lbl">Paredes</span>
+          <button class="btn btn-sm" type="button" data-walls="pastel" aria-pressed="true">Pastel</button>
+          <button class="btn btn-sm" type="button" data-walls="neutro" aria-pressed="false">Neutras</button>
+        </div>
+        <div class="seg" role="group" aria-label="Exibição">
+          <button class="btn btn-sm" type="button" id="btnHs" aria-pressed="true">Números</button>
+          <button class="btn btn-sm" type="button" id="btnDims" aria-pressed="false">Medidas</button>
+          <button class="btn btn-sm" type="button" id="btnWalk" aria-pressed="false">Modo caminhar</button>
+          <button class="btn btn-sm" type="button" id="btnReset">Reiniciar</button>
+        </div>
+      </div>
+      <p class="sim-help">Arraste para girar, use a roda do mouse ou dois dedos para aproximar e o botão direito (ou dois dedos) para mover. Clique em um número ou em um móvel para ver o que ele é e de onde veio a referência. No modo caminhar, use <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> ou as setas e arraste para olhar em volta.</p>
+    </div>
+  </section>
+
+  <section class="section" id="mobiliario" aria-labelledby="h-mob">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Mobiliário e equipamentos</p>
+        <h2 id="h-mob">O que há na sala simulada e por quê</h2>
+        <p>Os números correspondem aos marcadores da simulação. A etiqueta indica a origem da referência: compra do Rio Grande do Norte (RN), salas de São Paulo (SP) e do Acre (AC) ou estudo da UFAL.</p>
+      </div>
+      <ol class="items" id="itemList"></ol>
+    </div>
+  </section>
+
+  <section class="section" id="experiencias" aria-labelledby="h-exp">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Referências reais</p>
+        <h2 id="h-exp">O que estados e pesquisadores já fizeram</h2>
+      </div>
+      <div class="cases">
+        <article class="case">
+          <div class="case-top"><span class="uf">RN</span><h3>15 salas em presídios estaduais</h3><span class="when">set. 2026</span></div>
+          <p>A Secretaria de Administração Penitenciária firmou seis contratos, somando R$ 175.844,55 (Pregão Eletrônico 90027/2026), para equipar 15 salas usadas nos intervalos dos plantões.</p>
+          <ul>
+            <li>10 poltronas reclináveis, 10 esteiras elétricas e 15 sofás de 3 lugares</li>
+            <li>15 smart TVs de 43" e 15 roteadores Wi-Fi</li>
+            <li>15 bicicletas de spinning e 15 pufes gigantes</li>
+            <li>60 bancos para mesas de jogos</li>
+          </ul>
+          <p class="src">O recurso vem de convênio de 2018 com o antigo Depen (Funpen). A reportagem não liga a compra ao Pena Justa.</p>
+        </article>
+        <article class="case">
+          <div class="case-top"><span class="uf">SP</span><h3>CDP de Vila Independência</h3><span class="when">ago. 2025</span></div>
+          <p>Sala de cerca de 22 m² com TV, computador, área de atividade física, leitura e relaxamento, criada em parceria com uma entidade religiosa.</p>
+          <p>No plano estadual, São Paulo informa que 55,19% dos seus estabelecimentos prisionais já têm espaço de descompressão.</p>
+          <p class="src">Fonte: Secretaria da Administração Penitenciária de SP e matriz do plano estadual (TJSP).</p>
+        </article>
+        <article class="case">
+          <div class="case-top"><span class="uf">AC</span><h3>Presídio feminino de Rio Branco</h3><span class="when">c. 2024</span></div>
+          <p>Sala com plantas, televisão, mesa, sofá e cadeira de massagem, paga com recursos do Fundo Nacional de Segurança Pública. O governo do Acre afirma ter salas em metade dos presídios.</p>
+          <p class="src">Dados de trechos publicados pela agência de notícias do Acre, que está fora do ar durante o período eleitoral. Não foi possível conferir o texto completo.</p>
+        </article>
+        <article class="case">
+          <div class="case-top"><span class="uf">AL</span><h3>Estudo da UFAL com policiais penais</h3><span class="when">2022</span></div>
+          <p>Trabalho de conclusão de curso em Design. Os policiais ouvidos relataram calor, barulho, falta de privacidade, colchões ruins e descanso perto da circulação de presos.</p>
+          <ul>
+            <li>Sala de função única, isolada e longe dos presos</li>
+            <li>Conforto acústico e térmico, com ar-condicionado silencioso</li>
+            <li>Paredes em tons pastel, piso vinílico e plantas</li>
+            <li>Móveis resistentes e fáceis de limpar</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="fontes" aria-labelledby="h-fontes">
+    <div class="wrap read stack">
+      <p class="eyebrow">Fontes</p>
+      <h2 id="h-fontes">Documentos consultados</h2>
+      <ol class="sources">
+        <li><a href="https://www.cnj.jus.br/wp-content/uploads/2025/02/2025-02-07-pena-justa-plano-e-matriz.pdf" target="_blank" rel="noopener">Plano Nacional Pena Justa, texto e matriz de implementação</a> <span>· CNJ, fev. 2025 (pp. 133, 167–168 e 357)</span></li>
+        <li><a href="https://www.cnj.jus.br/wp-content/uploads/2026/08/pena-justa-ii-informe-stf.pdf" target="_blank" rel="noopener">II Informe de Monitoramento ao Supremo Tribunal Federal</a> <span>· CNJ, ago. 2026</span></li>
+        <li><a href="https://www.cnj.jus.br/sistema-carcerario/plano-pena-justa/estrutura-do-plano/" target="_blank" rel="noopener">Estrutura do plano Pena Justa</a> <span>· Portal CNJ</span></li>
+        <li><a href="https://www.tjsp.jus.br/Download/CanaisComunicacao/GMF/matriz-de-implementacao-do-plano-estadual.pdf" target="_blank" rel="noopener">Matriz de implementação do Plano Estadual de São Paulo</a> <span>· TJSP</span></li>
+        <li><a href="https://www.agepen.ms.gov.br/wp-content/uploads/2025/08/10_coisas-Pena-Justa.pdf" target="_blank" rel="noopener">10 coisas que você precisa saber sobre o Pena Justa</a> <span>· CNJ</span></li>
+        <li><a href="https://www.conjur.com.br/wp-content/uploads/2023/09/resolucao-cnpcp-construcao-prisoes.pdf" target="_blank" rel="noopener">Diretrizes Básicas para Arquitetura Penal</a> <span>· CNPCP, 2011</span></li>
+        <li><a href="https://www.repositorio.ufal.br/handle/123456789/11536" target="_blank" rel="noopener">Estudo de caso: sala de descompressão para o sistema prisional alagoano</a> <span>· UFAL, 2022</span></li>
+        <li><a href="https://www.sap.sp.gov.br/sec_adm_penitenciaria/Noticias/cdp-de-vila-independencia-inaugura-sala-de-descanso-para-servidores" target="_blank" rel="noopener">CDP de Vila Independência inaugura sala de descanso para servidores</a> <span>· SAP-SP, set. 2025</span></li>
+        <li><a href="https://agorarn.com.br/policia/governo-do-estado-vai-criar-salas-de-descompressao-em-15-presidios-do-rn/" target="_blank" rel="noopener">Governo do Estado vai criar salas de descompressão em 15 presídios do RN</a> <span>· Agora RN, set. 2026</span></li>
+        <li><a href="https://agencia.ac.gov.br/presidio-feminino-inaugura-sala-de-descompressao-em-rio-branco/" target="_blank" rel="noopener">Presídio feminino inaugura sala de descompressão em Rio Branco</a> <span>· Agência AC (fora do ar no momento)</span></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">Página informativa feita em outubro de 2026 a partir de documentos públicos. A sala em 3D é uma simulação ilustrativa e não substitui projeto arquitetônico.</div>
+</footer>
+
+<script>
+window.SALA_ITEMS = [
+  { id: 'sofa', n: 1, nome: 'Sofá de 3 lugares em corino', zona: 'Descanso e TV', tag: 'RN · UFAL',
+    funcao: 'Descanso sentado e convivência nos intervalos do plantão.',
+    ref: 'O RN comprou 15 sofás de 3 lugares. A UFAL indica corino ou corvin, impermeáveis e fáceis de limpar.' },
+  { id: 'poltronas', n: 2, nome: 'Poltronas reclináveis (2)', zona: 'Descanso e TV', tag: 'RN',
+    funcao: 'Repouso com as pernas elevadas depois de horas de trabalho em pé.',
+    ref: 'O RN comprou 10 poltronas reclináveis.' },
+  { id: 'tv', n: 3, nome: 'Smart TV de 43" com rack e painel ripado', zona: 'Descanso e TV', tag: 'RN · UFAL',
+    funcao: 'Lazer e desligamento da rotina da unidade. O painel ripado deixa o canto mais aconchegante.',
+    ref: 'O RN comprou 15 TVs de 43" (R$ 19,2 mil). A UFAL lista TV e rack e sugere painel ripado na área de TV.' },
+  { id: 'wifi', n: 4, nome: 'Roteador Wi-Fi', zona: 'Descanso e TV', tag: 'RN',
+    funcao: 'Internet para falar com a família e se distrair durante a pausa.',
+    ref: 'O RN comprou 15 roteadores Wi-Fi, a R$ 265 cada.' },
+  { id: 'pufes', n: 5, nome: 'Pufes', zona: 'Leitura e relaxamento', tag: 'RN · UFAL',
+    funcao: 'Assento informal que muda a postura e o clima do ambiente.',
+    ref: 'O RN comprou 15 pufes gigantes. A UFAL também inclui pufes.' },
+  { id: 'jogos', n: 6, nome: 'Mesa de jogos com 4 bancos', zona: 'Convivência', tag: 'RN · UFAL',
+    funcao: 'Jogos rápidos de tabuleiro ou cartas que aproximam a equipe.',
+    ref: 'O RN comprou 60 bancos para mesas de jogos. A UFAL propõe parede verde pastel nessa área.' },
+  { id: 'esteira', n: 7, nome: 'Esteira elétrica', zona: 'Atividade física', tag: 'RN · SP',
+    funcao: 'Exercício leve para aliviar a tensão acumulada.',
+    ref: 'O RN comprou 10 esteiras. A sala do CDP de Vila Independência (SP) tem área de recreação física.' },
+  { id: 'bike', n: 8, nome: 'Bicicleta de spinning', zona: 'Atividade física', tag: 'RN',
+    funcao: 'Exercício aeróbico em pouco espaço.',
+    ref: 'O RN comprou 15 bicicletas ergométricas tipo spinning.' },
+  { id: 'massagem', n: 9, nome: 'Cadeira de massagem', zona: 'Leitura e relaxamento', tag: 'AC',
+    funcao: 'Relaxamento muscular em pausas curtas.',
+    ref: 'Existe na sala do presídio feminino de Rio Branco (AC), segundo a agência de notícias do estado.' },
+  { id: 'estante', n: 10, nome: 'Estante de livros e luminária de leitura', zona: 'Leitura e relaxamento', tag: 'SP · UFAL',
+    funcao: 'Leitura com luz direcionada e mais quente.',
+    ref: 'A sala do CDP de Vila Independência (SP) tem espaço de leitura. A UFAL recomenda luz direcionada nesse canto.' },
+  { id: 'plantas', n: 11, nome: 'Plantas e jardim vertical', zona: 'Leitura e relaxamento', tag: 'UFAL · AC',
+    funcao: 'Contato com a natureza e um pouco mais de conforto acústico.',
+    ref: 'A UFAL sugere arália e zamioculca, que toleram ar-condicionado, e ervas aromáticas como alecrim. A sala do AC também tem plantas.' },
+  { id: 'armarios', n: 12, nome: 'Armários individuais', zona: 'Apoio', tag: 'UFAL',
+    funcao: 'Guarda de pertences durante a pausa.',
+    ref: 'A UFAL inclui armário no mobiliário da sala.' },
+  { id: 'bebedouro', n: 13, nome: 'Bebedouro', zona: 'Apoio', tag: 'Sugestão',
+    funcao: 'Hidratação perto da área de exercício.',
+    ref: 'Sugestão desta simulação. A UFAL recomenda água e lanches leves no espaço.' },
+  { id: 'ar', n: 14, nome: 'Ar-condicionado silencioso', zona: 'Conforto ambiental', tag: 'UFAL',
+    funcao: 'Conforto térmico sem ruído nem umidade.',
+    ref: 'Recomendação da UFAL. Calor no local de descanso foi uma das queixas dos policiais penais ouvidos.' },
+  { id: 'porta', n: 15, nome: 'Porta maciça com fechadura digital', zona: 'Segurança', tag: 'UFAL',
+    funcao: 'Privacidade e acesso restrito à equipe.',
+    ref: 'A UFAL propõe porta de madeira sólida e fechadura digital. Os policiais pediram descanso longe da circulação de presos.' },
+  { id: 'luz', n: 16, nome: 'Iluminação geral e de relaxamento', zona: 'Conforto ambiental', tag: 'UFAL',
+    funcao: 'Luz geral para o plantão e luz quente para relaxar. Compare no botão Iluminação.',
+    ref: 'A UFAL recomenda luz geral somada a luz direcionada na área de leitura.' }
+];
+(function () {
+  var list = document.getElementById('itemList');
+  if (list) {
+    list.innerHTML = window.SALA_ITEMS.map(function (it) {
+      return '<li class="item-row"><span class="num" aria-hidden="true">' + it.n + '</span>' +
+        '<div class="item-body"><h3>' + it.nome + '</h3>' +
+        '<p class="zone">' + it.zona + ' <span class="tag">' + it.tag + '</span></p>' +
+        '<p class="fn">' + it.funcao + '</p><p class="ref">' + it.ref + '</p></div>' +
+        '<button class="btn btn-sm" type="button" data-goto="' + it.id + '">Ver no 3D</button></li>';
+    }).join('');
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-goto]');
+    if (!b) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('viewer').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    window.dispatchEvent(new CustomEvent('sala:select', { detail: b.getAttribute('data-goto') }));
+  });
+})();
+</script>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+const ITEMS = window.SALA_ITEMS || [];
+const byId = Object.fromEntries(ITEMS.map((i) => [i.id, i]));
+const $ = (id) => document.getElementById(id);
+const viewer = $('viewer'), canvas = $('scene'), overlay = $('overlay'), statusEl = $('status'), card = $('card3d');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function showError(html) { statusEl.hidden = false; statusEl.classList.add('is-error'); statusEl.innerHTML = html; }
+
+let THREE, OrbitControls, RoomEnvironment, RoundedBoxGeometry;
+try {
+  const mods = await Promise.all([
+    import('three'),
+    import('three/addons/controls/OrbitControls.js'),
+    import('three/addons/environments/RoomEnvironment.js'),
+    import('three/addons/geometries/RoundedBoxGeometry.js'),
+  ]);
+  THREE = mods[0]; OrbitControls = mods[1].OrbitControls; RoomEnvironment = mods[2].RoomEnvironment; RoundedBoxGeometry = mods[3].RoundedBoxGeometry;
+} catch (err) {
+  showError('<p><strong>Não foi possível carregar a biblioteca 3D.</strong><br>Verifique a conexão com a internet e recarregue a página. A lista de móveis abaixo continua disponível.</p>');
+  throw err;
+}
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+} catch (err) {
+  showError('<p><strong>Seu navegador não conseguiu iniciar o WebGL.</strong><br>Tente outro navegador ou ative a aceleração de hardware. A lista de móveis abaixo descreve a sala.</p>');
+  throw err;
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+
+const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function rng(seed) { return () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, 1.6, 0.05, 80);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.maxPolarAngle = Math.PI * 0.495;
+controls.minDistance = 0.4;
+controls.maxDistance = 22;
+controls.screenSpacePanning = true;
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+/* ---------- texturas desenhadas em canvas ---------- */
+function canvasTex(w, h, draw, repeat) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+  return t;
+}
+const floorTex = canvasTex(1024, 1024, (x, w, h) => {
+  const R = rng(7), cols = 8, pw = w / cols;
+  x.fillStyle = '#B98F64'; x.fillRect(0, 0, w, h);
+  for (let i = 0; i < cols; i++) {
+    let y = -R() * h * 0.6;
+    while (y < h) {
+      const len = h * (0.42 + R() * 0.5);
+      x.fillStyle = `hsl(${29 + R() * 6} ${32 + R() * 12}% ${55 + R() * 9}%)`;
+      x.fillRect(i * pw, y, pw, len);
+      for (let g = 0; g < 16; g++) {
+        x.strokeStyle = `rgba(96,62,32,${0.05 + R() * 0.09})`; x.lineWidth = 0.8 + R() * 1.6;
+        const gx = i * pw + R() * pw; x.beginPath(); x.moveTo(gx, y);
+        for (let yy = y; yy <= y + len; yy += 32) x.lineTo(gx + Math.sin(yy * 0.012 + g) * 3.5 + (R() - 0.5) * 1.5, yy);
+        x.stroke();
+      }
+      x.fillStyle = 'rgba(58,38,22,.55)'; x.fillRect(i * pw, y + len - 2, pw, 2);
+      y += len;
+    }
+    x.fillStyle = 'rgba(58,38,22,.6)'; x.fillRect(i * pw, 0, 2, h);
+  }
+}, [3.75, 2.5]);
+const rubberTex = canvasTex(512, 512, (x, w, h) => {
+  x.fillStyle = '#3A4043'; x.fillRect(0, 0, w, h);
+  const R = rng(3), cs = ['#4A5154', '#2C3133', '#5A6367', '#323739'];
+  for (let i = 0; i < 6000; i++) { x.fillStyle = cs[(R() * 4) | 0]; x.fillRect(R() * w, R() * h, 1 + R() * 2, 1 + R() * 2); }
+}, [3, 2]);
+const chessTex = canvasTex(256, 256, (x, w) => {
+  const s = w / 8;
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) { x.fillStyle = (r + c) % 2 ? '#5A3F2C' : '#E9DEC6'; x.fillRect(c * s, r * s, s, s); }
+});
+const tvTex = canvasTex(512, 288, (x, w, h) => {
+  const R = rng(11);
+  const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#79AFC2'); g.addColorStop(0.58, '#F2D5B2'); g.addColorStop(1, '#F2D5B2');
+  x.fillStyle = g; x.fillRect(0, 0, w, h);
+  const s = x.createRadialGradient(330, 150, 4, 330, 150, 70); s.addColorStop(0, 'rgba(255,247,224,1)'); s.addColorStop(1, 'rgba(255,247,224,0)');
+  x.fillStyle = s; x.fillRect(0, 0, w, h);
+  [['#93B8A8', 152, 18, 0.012], ['#62917F', 176, 22, 0.017], ['#40705F', 200, 14, 0.026]].forEach(([col, base, amp, f], i) => {
+    x.fillStyle = col; x.beginPath(); x.moveTo(0, h);
+    for (let px = 0; px <= w; px += 8) x.lineTo(px, base + Math.sin(px * f + i * 1.7) * amp + Math.sin(px * f * 2.3 + i) * amp * 0.4);
+    x.lineTo(w, h); x.closePath(); x.fill();
+  });
+  const l = x.createLinearGradient(0, 222, 0, h); l.addColorStop(0, '#A2C8CF'); l.addColorStop(1, '#6C9DAA');
+  x.fillStyle = l; x.fillRect(0, 222, w, h - 222);
+  x.strokeStyle = 'rgba(255,250,235,.45)';
+  for (let i = 0; i < 14; i++) { const yy = 229 + i * 4; x.beginPath(); x.moveTo(300 - R() * 40, yy); x.lineTo(340 + R() * 40, yy); x.stroke(); }
+});
+
+/* ---------- materiais ---------- */
+const std = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.8, metalness: 0, ...o });
+const mats = {
+  wall: std(0xBFD4E3, { roughness: 0.95 }), wallAccent: std(0xC9DEC6, { roughness: 0.95 }), ceiling: std(0xF5F5F2, { roughness: 1 }),
+  floor: std(0xFFFFFF, { map: floorTex, roughness: 0.6 }), base: std(0xF3F3F0, { roughness: 0.6 }),
+  oak: std(0xC9A377, { roughness: 0.62 }), oakDark: std(0x8C6845, { roughness: 0.7 }), walnut: std(0x6C4A32, { roughness: 0.5 }), slat: std(0xB98E61, { roughness: 0.68 }),
+  corino: std(0x3D5560, { roughness: 0.46 }), corinoCushion: std(0x48616D, { roughness: 0.52 }), camel: std(0x9A6A46, { roughness: 0.48 }),
+  sage: std(0x8EAE8A, { roughness: 0.95 }), ochre: std(0xC8A04C, { roughness: 0.95 }), stoolTop: std(0x5E7F86, { roughness: 0.7 }),
+  metal: std(0x2B3134, { roughness: 0.4, metalness: 0.6 }), steel: std(0xB8C0C4, { roughness: 0.3, metalness: 0.85 }), black: std(0x16181A, { roughness: 0.35 }),
+  shell: std(0xDAD6CF, { roughness: 0.4 }), fabricDark: std(0x2F3639, { roughness: 0.6 }),
+  rubber: std(0xFFFFFF, { map: rubberTex, roughness: 0.95 }), white: std(0xF1F2F0, { roughness: 0.42 }), locker: std(0x8BA0AA, { roughness: 0.45, metalness: 0.35 }),
+  seam: std(0x55666E, { roughness: 0.6 }), pot: std(0xD8D2C7, { roughness: 0.55 }), terracotta: std(0xB3684A, { roughness: 0.85 }), soil: std(0x3B2B20, { roughness: 1 }),
+  stem: std(0x5B6B3A, { roughness: 0.8 }), leafInst: std(0xFFFFFF, { roughness: 0.6 }), bookInst: std(0xFFFFFF, { roughness: 0.75 }),
+  water: std(0x9CC7E6, { roughness: 0.08, transparent: true, opacity: 0.6 }), chess: std(0xFFFFFF, { map: chessTex, roughness: 0.45 }),
+  piece: std(0xF0EDE6, { roughness: 0.4 }), pieceDark: std(0x231C17, { roughness: 0.4 }),
+  screen: new THREE.MeshStandardMaterial({ map: tvTex, emissive: 0xFFFFFF, emissiveMap: tvTex, emissiveIntensity: 0.85, roughness: 0.25 }),
+  panel: new THREE.MeshStandardMaterial({ color: 0xFFFFFF, emissive: 0xFFFFFF, emissiveIntensity: 1.4, roughness: 1 }),
+  lampShade: new THREE.MeshStandardMaterial({ color: 0xF4EFE6, emissive: 0xFFB060, emissiveIntensity: 0.05, roughness: 0.7, side: THREE.DoubleSide }),
+  ledStrip: new THREE.MeshBasicMaterial({ color: 0xFFB45C, transparent: true, opacity: 0 }),
+  keypad: new THREE.MeshStandardMaterial({ color: 0x0B2A33, emissive: 0x3FD0C9, emissiveIntensity: 0.9 }),
+  ledGreen: new THREE.MeshStandardMaterial({ color: 0x0E2A12, emissive: 0x47E36A, emissiveIntensity: 1 }),
+  display: new THREE.MeshStandardMaterial({ color: 0x0B1F26, emissive: 0x4FA9C8, emissiveIntensity: 0.6 }),
+};
+Object.values(mats).forEach((m) => { if (m.isMeshStandardMaterial) m.envMapIntensity = 0.55; });
+
+/* ---------- auxiliares de modelagem ---------- */
+function mesh(geo, mat, x = 0, y = 0, z = 0, parent = scene, shadow = true) {
+  const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z);
+  m.castShadow = shadow; m.receiveShadow = true; parent.add(m); return m;
+}
+const B = (w, h, d, mat, x, y, z, p, r = 0) => mesh(r ? new RoundedBoxGeometry(w, h, d, 3, r) : new THREE.BoxGeometry(w, h, d), mat, x, y, z, p);
+const C = (rt, rb, h, mat, x, y, z, p, seg = 20) => mesh(new THREE.CylinderGeometry(rt, rb, h, seg), mat, x, y, z, p);
+const UP = V(0, 1, 0);
+function rod(a, b, r, mat, parent, seg = 10) {
+  const dir = V().subVectors(b, a); const len = dir.length();
+  const m = mesh(new THREE.CylinderGeometry(r, r, len, seg), mat, 0, 0, 0, parent);
+  m.position.copy(a).addScaledVector(dir, 0.5); m.quaternion.setFromUnitVectors(UP, dir.normalize()); return m;
+}
+const faceTo = (x, z, tx, tz) => Math.atan2(-(tx - x), -(tz - z));
+const groups = {};
+// objetos presos a uma parede somem quando a câmera está do lado de fora dela (vista de "casa de bonecas")
+const wallGroups = { N: [], S: [], W: [], E: [] };
+function onWall(g, wall) { if (wall) { g.userData.wall = wall; wallGroups[wall].push(g); } return g; }
+function item(id, x, z, rotY = 0, wall = null) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = rotY; g.userData.itemId = id;
+  scene.add(g); (groups[id] ||= []).push(g); return onWall(g, wall);
+}
+function wallGroup(wall) { const g = new THREE.Group(); scene.add(g); return onWall(g, wall); }
+
+/* ---------- sala 6,0 × 4,0 × 2,8 m ---------- */
+const W = 6, D = 4, H = 2.8;
+{
+  const floor = mesh(new THREE.PlaneGeometry(W, D), mats.floor, 0, 0, 0, scene, false); floor.rotation.x = -Math.PI / 2;
+  const ceil = mesh(new THREE.PlaneGeometry(W, D), mats.ceiling, 0, H, 0, scene, false); ceil.rotation.x = Math.PI / 2;
+  const wN = mesh(new THREE.PlaneGeometry(W, H), mats.wall, 0, H / 2, -D / 2, scene, false);
+  const wS = mesh(new THREE.PlaneGeometry(W, H), mats.wall, 0, H / 2, D / 2, scene, false); wS.rotation.y = Math.PI;
+  const wW = mesh(new THREE.PlaneGeometry(D, H), mats.wall, -W / 2, H / 2, 0, scene, false); wW.rotation.y = Math.PI / 2;
+  const wE = mesh(new THREE.PlaneGeometry(D, H), mats.wall, W / 2, H / 2, 0, scene, false); wE.rotation.y = -Math.PI / 2;
+  const acc = mesh(new THREE.PlaneGeometry(2.1, H), mats.wallAccent, 0.6, H / 2, D / 2 - 0.004, scene, false); acc.rotation.y = Math.PI;
+  const gN = wallGroup('N'), gS = wallGroup('S'), gW = wallGroup('W'), gE = wallGroup('E');
+  B(W, 0.08, 0.016, mats.base, 0, 0.04, -D / 2 + 0.008, gN);
+  B(W, 0.08, 0.016, mats.base, 0, 0.04, D / 2 - 0.008, gS);
+  B(0.016, 0.08, D, mats.base, -W / 2 + 0.008, 0.04, 0, gW);
+  B(0.016, 0.08, D, mats.base, W / 2 - 0.008, 0.04, 0, gE);
+  B(0.08, 0.12, 0.012, mats.white, 1.85, 1.1, D / 2 - 0.006, gS);
+  B(0.08, 0.08, 0.012, mats.white, -0.45, 0.32, -D / 2 + 0.006, gN);
+  const mat = mesh(new THREE.PlaneGeometry(2.55, 1.9), mats.rubber, 1.62, 0.004, -1.03, scene, false); mat.rotation.x = -Math.PI / 2;
+}
+
+/* luzes */
+const hemi = new THREE.HemisphereLight(0xEEF4FF, 0xBFB39F, 1.15); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xF7FAFF, 1.9);
+sun.position.set(1.4, 6, 2.2); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -3.6, right: 3.6, top: 3.2, bottom: -3.2, near: 1, far: 12 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; sun.shadow.radius = 4;
+scene.add(sun, sun.target);
+const lampLight = new THREE.PointLight(0xFFB868, 0, 4.5, 2); scene.add(lampLight);
+const tvGlow = new THREE.PointLight(0xFFB46A, 0, 3, 2); tvGlow.position.set(-1.5, 1.25, -1.85); scene.add(tvGlow);
+
+/* ---------- móveis ---------- */
+// 3 · TV, rack e painel ripado
+{
+  const g = item('tv', -1.5, -1.78, 0, 'N');
+  B(1.8, 0.38, 0.42, mats.oak, 0, 0.27, 0, g, 0.012);
+  [-0.6, 0, 0.6].forEach((sx) => B(0.006, 0.3, 0.004, mats.oakDark, sx, 0.27, 0.212, g));
+  [[-0.82, -0.16], [0.82, -0.16], [-0.82, 0.16], [0.82, 0.16]].forEach(([fx, fz]) => C(0.02, 0.02, 0.08, mats.metal, fx, 0.04, fz, g, 10));
+  const back = B(2.5, 2.45, 0.02, mats.oakDark, 0, 1.27, -0.205, g); back.castShadow = false;
+  for (let i = 0; i < 31; i++) B(0.045, 2.45, 0.03, mats.slat, -1.2 + i * 0.08, 1.27, -0.18, g);
+  const glow = mesh(new THREE.PlaneGeometry(1.2, 0.76), mats.ledStrip, 0, 1.22, -0.164, g, false); glow.receiveShadow = false;
+  B(0.97, 0.565, 0.035, mats.black, 0, 1.22, -0.145, g, 0.008);
+  mesh(new THREE.PlaneGeometry(0.94, 0.53), mats.screen, 0, 1.22, -0.126, g, false);
+}
+// 4 · roteador Wi-Fi
+{
+  const g = item('wifi', -0.85, -1.74);
+  B(0.2, 0.035, 0.13, mats.white, 0, 0.478, 0, g, 0.01);
+  rod(V(-0.07, 0.49, -0.05), V(-0.085, 0.66, -0.06), 0.006, mats.black, g);
+  rod(V(0.07, 0.49, -0.05), V(0.085, 0.66, -0.06), 0.006, mats.black, g);
+  [-0.05, -0.02, 0.01].forEach((lx) => B(0.008, 0.006, 0.004, mats.ledGreen, lx, 0.48, 0.066, g));
+}
+// 1 · sofá de 3 lugares
+function buildSofa(g) {
+  const w = 1.9, d = 0.88;
+  B(w, 0.3, d, mats.corino, 0, 0.24, 0, g, 0.04);
+  [-1, 0, 1].forEach((i) => B(0.54, 0.14, 0.62, mats.corinoCushion, i * 0.555, 0.46, -0.08, g, 0.05));
+  B(w, 0.55, 0.2, mats.corino, 0, 0.62, 0.34, g, 0.05);
+  [-1, 0, 1].forEach((i) => { const c = B(0.54, 0.4, 0.15, mats.corinoCushion, i * 0.555, 0.72, 0.19, g, 0.05); c.rotation.x = 0.13; });
+  [-1, 1].forEach((s) => B(0.14, 0.5, d, mats.corino, s * (w / 2 - 0.07), 0.36, 0, g, 0.04));
+  [[-0.85, -0.36], [0.85, -0.36], [-0.85, 0.36], [0.85, 0.36]].forEach(([fx, fz]) => C(0.025, 0.02, 0.09, mats.walnut, fx, 0.045, fz, g, 10));
+}
+buildSofa(item('sofa', -1.4, 0.35));
+// 2 · poltronas reclináveis
+function buildRecliner(g, mat) {
+  B(0.78, 0.32, 0.8, mat, 0, 0.24, 0, g, 0.05);
+  B(0.56, 0.13, 0.62, mat, 0, 0.45, -0.05, g, 0.05);
+  const back = B(0.62, 0.72, 0.2, mat, 0, 0.8, 0.36, g, 0.06); back.rotation.x = 0.34;
+  B(0.4, 0.18, 0.12, mat, 0, 1.18, 0.5, g, 0.05).rotation.x = 0.34;
+  [-1, 1].forEach((s) => B(0.12, 0.55, 0.8, mat, s * 0.36, 0.42, 0, g, 0.05));
+  const foot = B(0.5, 0.08, 0.42, mat, 0, 0.34, -0.6, g, 0.035); foot.rotation.x = 0.15;
+  rod(V(0, 0.22, -0.4), V(0, 0.32, -0.55), 0.015, mats.metal, g);
+}
+buildRecliner(item('poltronas', -2.55, -0.75, faceTo(-2.55, -0.75, -1.5, -1.9)), mats.camel);
+buildRecliner(item('poltronas', -0.3, -0.75, faceTo(-0.3, -0.75, -1.5, -1.9)), mats.camel);
+// 5 · pufes
+[[-0.98, 1.62, mats.sage], [-0.32, 1.66, mats.ochre]].forEach(([px, pz, m]) => {
+  const g = item('pufes', px, pz);
+  const s = mesh(new THREE.SphereGeometry(0.36, 28, 18), m, 0, 0.215, 0, g); s.scale.set(1, 0.62, 1);
+});
+// 6 · mesa de jogos com 4 bancos
+{
+  const g = item('jogos', 0.55, 1.15);
+  B(0.9, 0.04, 0.9, mats.oak, 0, 0.74, 0, g, 0.01);
+  const board = mesh(new THREE.PlaneGeometry(0.62, 0.62), mats.chess, 0, 0.7605, 0, g, false); board.rotation.x = -Math.PI / 2;
+  C(0.05, 0.05, 0.7, mats.metal, 0, 0.37, 0, g); C(0.28, 0.3, 0.03, mats.metal, 0, 0.015, 0, g, 28);
+  [[-0.19, -0.23, 1], [-0.04, -0.27, 1], [0.12, -0.19, 1], [0.04, 0.2, 0], [-0.12, 0.27, 0], [0.2, 0.12, 0]].forEach(([bx, bz, light]) => {
+    C(0.018, 0.022, 0.045, light ? mats.piece : mats.pieceDark, bx, 0.785, bz, g, 14);
+  });
+  [[0.62, 0], [-0.62, 0], [0, 0.62], [0, -0.62]].forEach(([sx, sz]) => {
+    C(0.17, 0.17, 0.05, mats.stoolTop, sx, 0.46, sz, g, 24); C(0.022, 0.022, 0.42, mats.metal, sx, 0.23, sz, g, 10); C(0.14, 0.15, 0.02, mats.metal, sx, 0.01, sz, g, 20);
+  });
+}
+// 7 · esteira elétrica
+{
+  const g = item('esteira', 1.05, -1.05);
+  B(0.74, 0.16, 1.7, mats.metal, 0, 0.1, 0, g, 0.03);
+  B(0.5, 0.012, 1.45, mats.black, 0, 0.186, 0.05, g);
+  [-1, 1].forEach((s) => B(0.1, 0.02, 1.5, mats.steel, s * 0.31, 0.185, 0.05, g));
+  B(0.74, 0.14, 0.28, mats.metal, 0, 0.2, -0.73, g, 0.03);
+  [-1, 1].forEach((s) => rod(V(s * 0.33, 0.22, -0.78), V(s * 0.33, 1.25, -0.6), 0.03, mats.metal, g, 14));
+  const cons = B(0.72, 0.22, 0.14, mats.black, 0, 1.32, -0.6, g, 0.03); cons.rotation.x = -0.55;
+  const disp = mesh(new THREE.PlaneGeometry(0.3, 0.1), mats.display, 0, 0.02, 0.071, cons, false); disp.receiveShadow = false;
+  [-1, 1].forEach((s) => rod(V(s * 0.33, 1.08, -0.62), V(s * 0.33, 1.05, -0.22), 0.016, mats.steel, g, 10));
+}
+// 8 · bicicleta de spinning
+{
+  const g = item('bike', 2.25, -1.25);
+  B(0.55, 0.05, 0.07, mats.metal, 0, 0.035, -0.45, g, 0.02); B(0.55, 0.05, 0.07, mats.metal, 0, 0.035, 0.42, g, 0.02);
+  B(0.07, 0.07, 0.95, mats.metal, 0, 0.09, 0, g, 0.02);
+  const fw = C(0.25, 0.25, 0.06, mats.steel, 0, 0.36, -0.32, g, 36); fw.rotation.z = Math.PI / 2;
+  const hub = C(0.06, 0.06, 0.08, mats.metal, 0, 0.36, -0.32, g, 16); hub.rotation.z = Math.PI / 2;
+  rod(V(0, 0.1, -0.4), V(0, 1.02, -0.18), 0.035, mats.metal, g, 12);
+  rod(V(0, 0.1, 0.05), V(0, 0.88, 0.3), 0.035, mats.metal, g, 12);
+  rod(V(0, 0.4, -0.05), V(0, 0.36, -0.3), 0.03, mats.metal, g, 10);
+  B(0.5, 0.035, 0.035, mats.black, 0, 1.04, -0.12, g, 0.015);
+  [-1, 1].forEach((s) => rod(V(s * 0.24, 1.04, -0.12), V(s * 0.2, 1.08, 0.06), 0.017, mats.black, g, 10));
+  B(0.16, 0.06, 0.27, mats.black, 0, 0.92, 0.36, g, 0.03);
+  const crank = C(0.075, 0.075, 0.02, mats.steel, 0.07, 0.36, -0.06, g, 20); crank.rotation.z = Math.PI / 2;
+  B(0.09, 0.02, 0.05, mats.black, 0.13, 0.26, -0.02, g); B(0.09, 0.02, 0.05, mats.black, -0.13, 0.46, -0.1, g);
+}
+// 9 · cadeira de massagem
+{
+  const g = item('massagem', -2.02, 1.22, faceTo(-2.02, 1.22, 0.2, 0.9));
+  B(0.82, 0.4, 0.88, mats.shell, 0, 0.24, 0.05, g, 0.08);
+  B(0.54, 0.14, 0.6, mats.fabricDark, 0, 0.49, -0.02, g, 0.05);
+  const back = B(0.66, 0.95, 0.28, mats.shell, 0, 0.95, 0.4, g, 0.08); back.rotation.x = 0.3;
+  B(0.5, 0.82, 0.06, mats.fabricDark, 0, 0, -0.14, back, 0.025);
+  B(0.4, 0.2, 0.12, mats.fabricDark, 0, 0.52, -0.1, back, 0.05);
+  [-1, 1].forEach((s) => B(0.15, 0.5, 0.84, mats.shell, s * 0.37, 0.52, 0.04, g, 0.06));
+  const leg = B(0.48, 0.5, 0.22, mats.shell, 0, 0.27, -0.5, g, 0.06); leg.rotation.x = 0.42;
+  B(0.38, 0.42, 0.04, mats.fabricDark, 0, 0.02, -0.12, leg, 0.015);
+}
+// 10 · estante de livros e luminária de leitura
+{
+  const g = item('estante', -2.83, 1.35, Math.PI / 2, 'W');
+  const w = 1.0, h = 1.9, d = 0.32;
+  [-1, 1].forEach((s) => B(0.025, h, d, mats.oak, s * (w / 2 - 0.0125), h / 2, 0, g));
+  const shelfY = [0.03, 0.41, 0.79, 1.17, 1.55, 1.885];
+  shelfY.forEach((y) => B(w, 0.025, d, mats.oak, 0, y, 0, g));
+  B(w, h, 0.01, mats.oakDark, 0, h / 2, -d / 2 + 0.005, g);
+  const R = rng(42), palette = [0x7A3E3E, 0x3E5A7A, 0x5E7A3E, 0xC2A15A, 0x8C6B9C, 0xD9D2C3, 0x2F4F4F, 0xB5653F, 0x41566B, 0xA08D6B];
+  const books = []; const col = new THREE.Color();
+  shelfY.slice(0, 5).forEach((y, si) => {
+    let x = -0.47;
+    while (x < 0.44) {
+      const bw = 0.022 + R() * 0.03, bh = 0.2 + R() * 0.12, bd = 0.19 + R() * 0.06;
+      if (si === 2 && x > 0.12 && x < 0.32) { x += 0.2; continue; }
+      if (R() < 0.06) { x += 0.05; continue; }
+      books.push({ x: x + bw / 2, y: y + 0.0125 + bh / 2, z: -0.01, w: bw, h: bh, d: bd, c: palette[(R() * palette.length) | 0] });
+      x += bw + 0.002;
+    }
+  });
+  const inst = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mats.bookInst, books.length);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+  books.forEach((b, i) => { m4.compose(V(b.x, b.y, b.z), q, V(b.w, b.h, b.d)); inst.setMatrixAt(i, m4); inst.setColorAt(i, col.set(b.c)); });
+  inst.castShadow = true; inst.receiveShadow = true; g.add(inst);
+  const lamp = item('estante', -2.72, 0.6);
+  C(0.15, 0.16, 0.025, mats.metal, 0, 0.0125, 0, lamp, 28);
+  rod(V(0, 0.02, 0), V(0, 1.62, 0), 0.012, mats.metal, lamp);
+  rod(V(0, 1.62, 0), V(0.32, 1.66, 0.42), 0.01, mats.metal, lamp);
+  const shade = mesh(new THREE.CylinderGeometry(0.07, 0.15, 0.17, 28, 1, true), mats.lampShade, 0.36, 1.58, 0.47, lamp);
+  shade.castShadow = false;
+  lampLight.position.set(-2.72 + 0.36, 1.5, 0.6 + 0.47);
+}
+// 11 · plantas e jardim vertical
+{
+  const R = rng(5), col = new THREE.Color(), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  const greens = [0x3E7B47, 0x2F6A3A, 0x5C9152, 0x497F3E, 0x6FA05E, 0x2B5A33];
+  const wall = item('plantas', -1.4, 1.93, 0, 'S');
+  B(1.12, 1.24, 0.05, mats.oakDark, 0, 1.55, 0.02, wall);
+  const n = 150, leaves = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.075, 0), mats.leafInst, n);
+  for (let i = 0; i < n; i++) {
+    const s = 0.7 + R() * 0.75;
+    m4.compose(V((R() - 0.5) * 1.02, 0.98 + R() * 1.14, -0.03 - R() * 0.06), q.setFromEuler(e.set(R() * 3, R() * 3, R() * 3)), V(s, s * 0.8, s));
+    leaves.setMatrixAt(i, m4); leaves.setColorAt(i, col.set(greens[(R() * greens.length) | 0]));
+  }
+  leaves.castShadow = true; wall.add(leaves);
+
+  const aralia = item('plantas', -0.28, -1.72);
+  C(0.17, 0.13, 0.34, mats.pot, 0, 0.17, 0, aralia, 28); C(0.155, 0.155, 0.01, mats.soil, 0, 0.335, 0, aralia, 24);
+  const tips = [V(0.05, 1.45, 0.02), V(-0.12, 1.2, 0.08), V(0.14, 1.05, -0.08)];
+  tips.forEach((t) => rod(V(0, 0.33, 0), t, 0.012, mats.stem, aralia, 6));
+  const al = new THREE.InstancedMesh(new THREE.SphereGeometry(0.07, 10, 6), mats.leafInst, 90);
+  for (let i = 0; i < 90; i++) {
+    const t = tips[i % 3], s = 0.8 + R() * 0.5;
+    m4.compose(V(t.x + (R() - 0.5) * 0.5, t.y - 0.35 + R() * 0.5, t.z + (R() - 0.5) * 0.5), q.setFromEuler(e.set(R() - 0.5, R() * 3, R() - 0.5)), V(s, 0.32 * s, s));
+    al.setMatrixAt(i, m4); al.setColorAt(i, col.set(greens[(R() * 3) | 0]));
+  }
+  al.castShadow = true; aralia.add(al);
+
+  const zz = item('plantas', -2.75, -1.75);
+  C(0.14, 0.11, 0.27, mats.terracotta, 0, 0.135, 0, zz, 24); C(0.13, 0.13, 0.01, mats.soil, 0, 0.27, 0, zz, 20);
+  const zl = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 10, 6), mats.leafInst, 72);
+  let k = 0;
+  for (let s = 0; s < 9; s++) {
+    const ang = (s / 9) * Math.PI * 2 + R() * 0.3, len = 0.45 + R() * 0.3, lean = 0.25 + R() * 0.3;
+    const top = V(Math.cos(ang) * lean * len, 0.27 + len, Math.sin(ang) * lean * len);
+    rod(V(0, 0.27, 0), top, 0.008, mats.stem, zz, 6);
+    for (let j = 0; j < 8; j++) {
+      const p = V(0, 0.27, 0).lerp(top, 0.3 + j * 0.09); const side = j % 2 ? 1 : -1;
+      p.x += Math.cos(ang + Math.PI / 2) * 0.035 * side; p.z += Math.sin(ang + Math.PI / 2) * 0.035 * side;
+      m4.compose(p, q.setFromEuler(e.set(R() * 0.6, -ang, 0.4 * side)), V(0.55, 0.22, 1.3));
+      zl.setMatrixAt(k, m4); zl.setColorAt(k, col.set(0x24502C)); k++;
+    }
+  }
+  zl.castShadow = true; zz.add(zl);
+}
+// 12 · armários
+{
+  const g = item('armarios', 2.78, 0.85, -Math.PI / 2, 'E');
+  B(1.2, 1.85, 0.42, mats.locker, 0, 0.925, 0, g, 0.01);
+  [-0.3, 0, 0.3].forEach((sx) => B(0.006, 1.8, 0.004, mats.seam, sx, 0.925, 0.212, g));
+  B(1.18, 0.006, 0.004, mats.seam, 0, 0.95, 0.212, g);
+  [-0.45, -0.15, 0.15, 0.45].forEach((sx) => {
+    [0.95 + 0.84, 0.95 - 0.06].forEach((topY) => {
+      for (let v = 0; v < 4; v++) B(0.16, 0.008, 0.004, mats.seam, sx, topY - 0.08 - v * 0.022, 0.213, g);
+      B(0.02, 0.07, 0.02, mats.steel, sx + 0.11, topY - 0.42, 0.22, g);
+    });
+  });
+}
+// 13 · bebedouro
+{
+  const g = item('bebedouro', 2.8, -0.1, -Math.PI / 2, 'E');
+  B(0.32, 1.0, 0.32, mats.white, 0, 0.5, 0, g, 0.02);
+  B(0.2, 0.02, 0.1, mats.metal, 0, 0.7, 0.17, g);
+  B(0.03, 0.05, 0.03, mats.steel, -0.05, 0.86, 0.175, g); B(0.03, 0.05, 0.03, mats.metal, 0.05, 0.86, 0.175, g);
+  C(0.13, 0.13, 0.38, mats.water, 0, 1.2, 0, g, 28).castShadow = false;
+  C(0.05, 0.05, 0.03, mats.water, 0, 1.405, 0, g, 16);
+}
+// 14 · ar-condicionado
+{
+  const g = item('ar', 0.55, 1.86, 0, 'S');
+  B(0.9, 0.28, 0.2, mats.white, 0, 2.42, 0, g, 0.04);
+  B(0.78, 0.02, 0.01, mats.seam, 0, 2.31, -0.1, g);
+  B(0.06, 0.012, 0.004, mats.ledGreen, 0.36, 2.38, -0.101, g);
+}
+// 15 · porta com fechadura digital
+{
+  const g = item('porta', 2.45, 1.97, 0, 'S');
+  B(0.88, 2.08, 0.045, mats.walnut, 0, 1.04, 0, g, 0.006);
+  [-1, 1].forEach((s) => B(0.06, 2.14, 0.06, mats.white, s * 0.47, 1.07, 0.005, g));
+  B(1.0, 0.06, 0.06, mats.white, 0, 2.11, 0.005, g);
+  B(0.13, 0.02, 0.02, mats.steel, -0.3, 1.02, -0.045, g, 0.008);
+  C(0.025, 0.025, 0.02, mats.steel, -0.35, 1.02, -0.03, g, 14).rotation.x = Math.PI / 2;
+  B(0.075, 0.17, 0.025, mats.black, -0.35, 1.2, -0.035, g, 0.006);
+  const pad = mesh(new THREE.PlaneGeometry(0.05, 0.085), mats.keypad, -0.35, 1.215, -0.0485, g, false); pad.rotation.y = Math.PI;
+}
+// 16 · iluminação (painéis de LED no forro)
+{
+  const g = item('luz', 0, 0);
+  [[-1.5, -0.75], [1.5, -0.75], [-1.5, 1.0], [1.5, 1.0]].forEach(([px, pz]) => {
+    const p = mesh(new THREE.PlaneGeometry(0.62, 0.62), mats.panel, px, H - 0.004, pz, g, false); p.rotation.x = Math.PI / 2;
+  });
+}
+
+/* ---------- cotas ---------- */
+const dimGroup = new THREE.Group(); dimGroup.visible = false; scene.add(dimGroup);
+const dimMat = new THREE.LineBasicMaterial({ color: 0xD58F25, depthTest: false, transparent: true });
+const dimLabels = [];
+function dim(a, b, tick, text) {
+  const pts = [a, b, a.clone().sub(tick), a.clone().add(tick), b.clone().sub(tick), b.clone().add(tick)];
+  const l = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), dimMat); l.renderOrder = 20; dimGroup.add(l);
+  if (text) addDimLabel(a.clone().lerp(b, 0.5), text);
+}
+function addDimLabel(pos, text) {
+  const el = document.createElement('span'); el.className = 'dim-label'; el.textContent = text; el.hidden = true; overlay.appendChild(el);
+  dimLabels.push({ pos, el });
+}
+dim(V(-3, 0.01, 2.3), V(3, 0.01, 2.3), V(0, 0, 0.1), '6,00 m');
+dim(V(3.3, 0.01, -2), V(3.3, 0.01, 2), V(0.1, 0, 0), '4,00 m');
+dim(V(3.2, 0, 2.2), V(3.2, 2.8, 2.2), V(0.1, 0, 0), 'pé-direito 2,80 m');
+addDimLabel(V(0.2, 0.02, 0.0), 'área 24 m²');
+
+/* ---------- marcadores ---------- */
+const ANCH = {
+  sofa: [-1.4, 1.0, 0.35], poltronas: [-2.55, 1.32, -0.75], tv: [-1.5, 1.66, -1.88], wifi: [-0.85, 0.74, -1.74],
+  pufes: [-0.65, 0.62, 1.64], jogos: [0.55, 1.0, 1.15], esteira: [1.05, 1.62, -1.6], bike: [2.25, 1.32, -1.3],
+  massagem: [-2.05, 1.62, 1.25], estante: [-2.82, 2.1, 1.35], plantas: [-1.4, 2.3, 1.93], armarios: [2.8, 2.02, 0.85],
+  bebedouro: [2.8, 1.6, -0.1], ar: [0.55, 2.68, 1.84], porta: [2.45, 2.3, 1.95], luz: [1.5, 2.72, 1.0],
+};
+const CAMS = {
+  sofa: { pos: [-0.75, 1.5, -1.3], tgt: [-1.4, 0.55, 0.4] },
+  poltronas: { pos: [-1.05, 1.55, 0.35], tgt: [-2.35, 0.55, -0.8] },
+  tv: { pos: [-1.5, 1.35, 0.95], tgt: [-1.5, 1.1, -1.9] },
+  wifi: { pos: [-0.3, 1.15, -0.8], tgt: [-0.85, 0.5, -1.74] },
+  pufes: { pos: [0.35, 1.45, 0.15], tgt: [-0.7, 0.25, 1.62] },
+  jogos: { pos: [1.9, 1.65, -0.15], tgt: [0.55, 0.6, 1.15] },
+  esteira: { pos: [-0.45, 1.7, 0.55], tgt: [1.05, 0.7, -1.1] },
+  bike: { pos: [0.95, 1.55, 0.45], tgt: [2.25, 0.7, -1.25] },
+  massagem: { pos: [-0.55, 1.5, 0.15], tgt: [-2.05, 0.65, 1.2] },
+  estante: { pos: [-0.75, 1.5, 0.45], tgt: [-2.8, 1.0, 1.35] },
+  plantas: { pos: [-1.1, 1.5, -0.35], tgt: [-1.4, 1.35, 1.9] },
+  armarios: { pos: [0.9, 1.5, 0.1], tgt: [2.8, 1.0, 0.85] },
+  bebedouro: { pos: [1.15, 1.4, 0.75], tgt: [2.8, 0.85, -0.1] },
+  ar: { pos: [0.45, 1.45, -0.9], tgt: [0.55, 2.35, 1.85] },
+  porta: { pos: [0.9, 1.55, -0.05], tgt: [2.45, 1.1, 1.95] },
+  luz: { pos: [2.3, 1.3, 1.5], tgt: [-0.4, 2.7, -0.6] },
+};
+const VIEWS = {
+  geral: { pos: [4.7, 4.6, 5.5], tgt: [0, 0.45, 0.1] },
+  descanso: { pos: [-0.35, 1.45, 1.7], tgt: [-1.55, 0.95, -1.5] },
+  jogos: { pos: [2.0, 1.7, -0.4], tgt: [0.35, 0.6, 1.35] },
+  exercicio: { pos: [-0.5, 1.75, 0.9], tgt: [1.6, 0.75, -1.2] },
+  leitura: { pos: [0.3, 1.6, 0.1], tgt: [-2.2, 0.9, 1.35] },
+  planta: { pos: [0, 10.5, 0.01], tgt: [0, 0, 0] },
+};
+const hotspots = ITEMS.filter((it) => ANCH[it.id]).map((it) => {
+  const el = document.createElement('button');
+  el.type = 'button'; el.className = 'hs'; el.textContent = it.n; el.setAttribute('aria-pressed', 'false');
+  el.setAttribute('aria-label', `${it.n}. ${it.nome}`); el.title = it.nome;
+  el.addEventListener('click', () => select(it.id));
+  overlay.appendChild(el);
+  return { it, el, pos: V(...ANCH[it.id]) };
+});
+
+/* ---------- estado, render sob demanda ---------- */
+const occluders = [];
+scene.traverse((o) => { if (o.isMesh || o.isInstancedMesh) occluders.push(o); });
+let vw = 1, vh = 1, needsRender = true, inView = true, tween = null, last = performance.now(), firstFrame = true;
+const requestRender = () => { needsRender = true; };
+controls.addEventListener('change', requestRender);
+controls.addEventListener('start', () => { tween = null; setViewPressed(null); });
+
+function resize() {
+  vw = Math.max(1, viewer.clientWidth); vh = Math.max(1, viewer.clientHeight);
+  renderer.setSize(vw, vh, false); camera.aspect = vw / vh; camera.updateProjectionMatrix(); requestRender();
+}
+new ResizeObserver(resize).observe(viewer);
+new IntersectionObserver((es) => { inView = es[0].isIntersecting; if (inView) requestRender(); }).observe(viewer);
+
+function sceneBg() {
+  const v = getComputedStyle(document.documentElement).getPropertyValue('--scene-bg').trim() || '#D9E3E3';
+  scene.background = new THREE.Color(v); requestRender();
+}
+sceneBg();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', sceneBg);
+new MutationObserver(sceneBg).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+function updateWallVisibility() {
+  const p = camera.position;
+  const out = { N: p.z < -D / 2, S: p.z > D / 2, W: p.x < -W / 2, E: p.x > W / 2 };
+  for (const k in wallGroups) for (const g of wallGroups[k]) g.visible = !out[k];
+}
+function shown(o) { while (o) { if (!o.visible) return false; o = o.parent; } return true; }
+const firstShownHit = (hits) => hits.find((h) => shown(h.object));
+const ray = new THREE.Raycaster(), tmp = V(), dir = V();
+function project(pos, el) {
+  tmp.copy(pos).project(camera);
+  const off = tmp.z > 1 || tmp.z < -1 || Math.abs(tmp.x) > 1.08 || Math.abs(tmp.y) > 1.08;
+  el.classList.toggle('is-off', off);
+  if (!off) el.style.transform = `translate(${((tmp.x + 1) / 2) * vw}px, ${((1 - tmp.y) / 2) * vh}px)`;
+  return !off;
+}
+function updateOverlay() {
+  for (const h of hotspots) {
+    if (!project(h.pos, h.el)) continue;
+    dir.subVectors(h.pos, camera.position); const dist = dir.length(); dir.normalize();
+    ray.set(camera.position, dir); ray.far = dist;
+    const hit = firstShownHit(ray.intersectObjects(occluders, false));
+    let behind = !(groups[h.it.id] || []).some((g) => g.visible);
+    if (!behind && hit && hit.distance < dist - 0.2) { let o = hit.object; while (o && !o.userData.itemId) o = o.parent; behind = !(o && o.userData.itemId === h.it.id); }
+    h.el.classList.toggle('is-behind', behind);
+  }
+  if (dimGroup.visible) for (const d of dimLabels) project(d.pos, d.el);
+}
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (!inView) return;
+  if (tween) {
+    const k = Math.min(1, (now - tween.start) / tween.dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    camera.position.lerpVectors(tween.p0, tween.p1, e); controls.target.lerpVectors(tween.t0, tween.t1, e);
+    if (k >= 1) tween = null;
+    needsRender = true;
+  }
+  if (walk.on) { if (stepWalk(dt)) needsRender = true; }
+  else if (controls.update()) needsRender = true;
+  if (needsRender) {
+    needsRender = false;
+    updateWallVisibility(); renderer.render(scene, camera); updateOverlay();
+    if (firstFrame) { firstFrame = false; statusEl.hidden = true; }
+  }
+}
+
+/* ---------- câmera ---------- */
+function viewFor(name) {
+  const v = VIEWS[name]; const pos = V(...v.pos), tgt = V(...v.tgt);
+  const a = camera.aspect || 1.6, tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  if (name === 'geral') pos.sub(tgt).multiplyScalar(clamp(1.75 / a, 1, 2.3)).add(tgt);
+  if (name === 'planta') pos.set(0, Math.max(2.6 / tanHalf, 3.7 / (tanHalf * a)), 0.01);
+  return { pos, tgt };
+}
+function flyTo(pos, tgt, dur = 950) {
+  if (walk.on) exitWalk();
+  if (reduceMotion.matches) { camera.position.copy(pos); controls.target.copy(tgt); controls.update(); requestRender(); return; }
+  tween = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: tgt.clone(), start: performance.now(), dur };
+}
+const viewBtns = [...document.querySelectorAll('[data-view]')];
+function setViewPressed(name) { viewBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === name))); }
+viewBtns.forEach((b) => b.addEventListener('click', () => { const v = viewFor(b.dataset.view); flyTo(v.pos, v.tgt); setViewPressed(b.dataset.view); }));
+{ const v = viewFor('geral'); camera.position.copy(v.pos); controls.target.copy(v.tgt); controls.update(); }
+// mantém o alvo da órbita dentro da sala
+controls.addEventListener('change', () => {
+  const t = controls.target;
+  t.set(clamp(t.x, -3, 3), clamp(t.y, 0, 2.8), clamp(t.z, -2, 2));
+});
+
+/* ---------- seleção ---------- */
+let helpers = [];
+function select(id, fly = true) {
+  const it = byId[id]; if (!it) return;
+  helpers.forEach((h) => scene.remove(h)); helpers = [];
+  (groups[id] || []).forEach((g) => {
+    const box = new THREE.Box3().setFromObject(g).expandByScalar(0.03);
+    const h = new THREE.Box3Helper(box, 0xE09A2B); h.renderOrder = 15;
+    scene.add(h); helpers.push(h);
+  });
+  hotspots.forEach((h) => h.el.setAttribute('aria-pressed', String(h.it.id === id)));
+  $('cNum').textContent = it.n; $('cTitle').textContent = it.nome; $('cZone').textContent = it.zona; $('cTag').textContent = it.tag;
+  $('cFn').textContent = it.funcao; $('cRef').textContent = it.ref; card.hidden = false;
+  if (fly && CAMS[id]) { flyTo(V(...CAMS[id].pos), V(...CAMS[id].tgt)); setViewPressed(null); }
+  requestRender();
+}
+function clearSelection() {
+  helpers.forEach((h) => scene.remove(h)); helpers = []; card.hidden = true;
+  hotspots.forEach((h) => h.el.setAttribute('aria-pressed', 'false')); requestRender();
+}
+$('cClose').addEventListener('click', clearSelection);
+window.addEventListener('sala:select', (e) => select(e.detail));
+
+const ndc = new THREE.Vector2();
+function pickAt(cx, cy) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera); ray.far = Infinity;
+  const hit = firstShownHit(ray.intersectObjects(occluders, false)); if (!hit) return;
+  let o = hit.object; while (o && !o.userData.itemId) o = o.parent;
+  if (o) select(o.userData.itemId);
+}
+
+/* ---------- modo caminhar ---------- */
+const walk = { on: false, yaw: 0, pitch: 0, keys: new Set() };
+const walkBtn = $('btnWalk'), walkpad = $('walkpad'), walkHint = $('walkHint');
+function applyWalkRot() { camera.rotation.order = 'YXZ'; camera.rotation.set(walk.pitch, walk.yaw, 0); }
+function enterWalk() {
+  tween = null; walk.on = true; controls.enabled = false;
+  const p = camera.position.clone();
+  if (Math.abs(p.x) < 2.75 && Math.abs(p.z) < 1.75 && p.y < 2.6) { p.y = 1.62; camera.position.copy(p); camera.lookAt(controls.target.x, 1.2, controls.target.z); }
+  else { camera.position.set(1.9, 1.62, 1.15); camera.lookAt(-1.4, 1.1, -1.2); }
+  const e = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ'); walk.yaw = e.y; walk.pitch = clamp(e.x, -1.1, 1.1); applyWalkRot();
+  viewer.classList.add('walking'); walkBtn.setAttribute('aria-pressed', 'true'); walkpad.hidden = false; walkHint.hidden = false;
+  setViewPressed(null); canvas.focus({ preventScroll: true }); requestRender();
+}
+function exitWalk() {
+  walk.on = false; walk.keys.clear();
+  camera.getWorldDirection(dir); controls.target.copy(camera.position).addScaledVector(dir, 1.6); controls.target.y = clamp(controls.target.y, 0.2, 2.6);
+  camera.rotation.order = 'XYZ'; controls.enabled = true; controls.update();
+  viewer.classList.remove('walking'); walkBtn.setAttribute('aria-pressed', 'false'); walkpad.hidden = true; walkHint.hidden = true; requestRender();
+}
+function stepWalk(dt) {
+  const k = walk.keys; let f = 0, s = 0;
+  if (k.has('f')) f += 1; if (k.has('b')) f -= 1; if (k.has('l')) s -= 1; if (k.has('r')) s += 1;
+  if (!f && !s) return false;
+  const sp = 1.5 * dt, fx = -Math.sin(walk.yaw), fz = -Math.cos(walk.yaw), rx = Math.cos(walk.yaw), rz = -Math.sin(walk.yaw);
+  camera.position.x = clamp(camera.position.x + (fx * f + rx * s) * sp, -2.75, 2.75);
+  camera.position.z = clamp(camera.position.z + (fz * f + rz * s) * sp, -1.75, 1.75);
+  return true;
+}
+walkBtn.addEventListener('click', () => (walk.on ? exitWalk() : enterWalk()));
+$('walkExit').addEventListener('click', exitWalk);
+const KEYMAP = { KeyW: 'f', ArrowUp: 'f', KeyS: 'b', ArrowDown: 'b', KeyA: 'l', ArrowLeft: 'l', KeyD: 'r', ArrowRight: 'r' };
+window.addEventListener('keydown', (e) => {
+  if (!walk.on) return;
+  if (e.target.closest && e.target.closest('input, textarea, select')) return;
+  if (e.code === 'Escape') { exitWalk(); return; }
+  const d = KEYMAP[e.code]; if (d) { walk.keys.add(d); e.preventDefault(); }
+});
+window.addEventListener('keyup', (e) => { const d = KEYMAP[e.code]; if (d) walk.keys.delete(d); });
+window.addEventListener('blur', () => walk.keys.clear());
+walkpad.querySelectorAll('[data-dir]').forEach((b) => {
+  const d = b.dataset.dir;
+  b.addEventListener('pointerdown', (e) => { e.preventDefault(); walk.keys.add(d); b.setPointerCapture(e.pointerId); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((t) => b.addEventListener(t, () => walk.keys.delete(d)));
+});
+
+/* ponteiro: arrastar para olhar no modo caminhar, toque curto para selecionar */
+let down = null;
+canvas.addEventListener('pointerdown', (e) => {
+  down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, moved: false };
+  if (walk.on) canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', (e) => {
+  if (!down) return;
+  if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) down.moved = true;
+  if (walk.on) {
+    walk.yaw -= (e.clientX - down.lx) * 0.0045; walk.pitch = clamp(walk.pitch - (e.clientY - down.ly) * 0.0045, -1.1, 1.1);
+    applyWalkRot(); requestRender();
+  }
+  down.lx = e.clientX; down.ly = e.clientY;
+});
+canvas.addEventListener('pointerup', (e) => { if (down && !down.moved) pickAt(e.clientX, e.clientY); down = null; });
+canvas.addEventListener('pointercancel', () => { down = null; });
+
+/* ---------- alternâncias ---------- */
+function setLighting(mode) {
+  const relax = mode === 'relax';
+  hemi.color.set(relax ? 0xFFDDB8 : 0xEEF4FF); hemi.groundColor.set(relax ? 0x5A4A3A : 0xBFB39F); hemi.intensity = relax ? 0.4 : 1.15;
+  sun.color.set(relax ? 0xFFC890 : 0xF7FAFF); sun.intensity = relax ? 0.35 : 1.9;
+  mats.panel.emissiveIntensity = relax ? 0.1 : 1.4;
+  lampLight.intensity = relax ? 9 : 0; mats.lampShade.emissiveIntensity = relax ? 1.6 : 0.05;
+  tvGlow.intensity = relax ? 2.5 : 0; mats.ledStrip.opacity = relax ? 0.85 : 0;
+  renderer.toneMappingExposure = relax ? 1.15 : 1.0;
+  document.querySelectorAll('[data-light]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.light === mode)));
+  requestRender();
+}
+function setWalls(mode) {
+  const pastel = mode === 'pastel';
+  mats.wall.color.set(pastel ? 0xBFD4E3 : 0xE9E7E2); mats.wallAccent.color.set(pastel ? 0xC9DEC6 : 0xE2DFD8);
+  document.querySelectorAll('[data-walls]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.walls === mode)));
+  requestRender();
+}
+document.querySelectorAll('[data-light]').forEach((b) => b.addEventListener('click', () => setLighting(b.dataset.light)));
+document.querySelectorAll('[data-walls]').forEach((b) => b.addEventListener('click', () => setWalls(b.dataset.walls)));
+$('btnDims').addEventListener('click', (e) => {
+  dimGroup.visible = !dimGroup.visible; e.currentTarget.setAttribute('aria-pressed', String(dimGroup.visible));
+  dimLabels.forEach((d) => { d.el.hidden = !dimGroup.visible; }); requestRender();
+});
+$('btnHs').addEventListener('click', (e) => {
+  const on = overlay.classList.toggle('no-hs'); e.currentTarget.setAttribute('aria-pressed', String(!on));
+});
+$('btnReset').addEventListener('click', () => {
+  clearSelection(); const v = viewFor('geral'); flyTo(v.pos, v.tgt); setViewPressed('geral');
+});
+
+setLighting('plantao');
+resize();
+requestAnimationFrame(frame);
+</script>
+
+</body>
+</html>
