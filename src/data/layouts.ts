@@ -109,7 +109,7 @@ const padrao: Layout = {
     { item: "poltrona", x: -3.225, z: 0, rot: -PI2, area: "leitura" },
     { item: "estante", x: -3.84, z: 0.95, rot: PI2, area: "leitura", parede: "W" },
     { item: "luminaria", x: -1.52, z: -0.5, rot: -PI2, area: "leitura" },
-    { item: "massagem", x: -2.75, z: 2, rot: PI2, area: "leitura" },
+    { item: "massagem", x: -3.05, z: 2, rot: -PI2, area: "leitura" },
     { item: "plantas", x: -3.97, z: 1.94, rot: -PI2, variante: "jardim", area: "leitura", parede: "W" },
     { item: "plantas", x: 1.8, z: 2.22, variante: "arália", area: "leitura" },
     // Descanso e TV, com a rede no canto nordeste.
