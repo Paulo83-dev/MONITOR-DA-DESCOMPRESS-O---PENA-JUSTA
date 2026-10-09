@@ -1,7 +1,7 @@
 import { FONTES, type Fonte } from "./fontes";
 
 /** Data em que os dados deste arquivo foram conferidos pela última vez. */
-export const ATUALIZADO_EM = "2026-10-08";
+export const ATUALIZADO_EM = "2026-10-09";
 
 /** Referência nacional: indicador 2.5.1.1.1.1 do Pena Justa. */
 export const INDICADOR = {

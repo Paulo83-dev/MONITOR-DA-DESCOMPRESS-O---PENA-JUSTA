@@ -36,6 +36,16 @@ export const DOCUMENTOS: Documento[] = [
     fonteUrl: "https://www.cnj.jus.br/pena-justa-ii-informe-stf/",
   },
   {
+    id: "informe-1",
+    titulo: "I Informe de Monitoramento ao Supremo Tribunal Federal",
+    orgao: "CNJ",
+    data: "Agosto de 2025",
+    descricao:
+      "Avalia o primeiro semestre de 2025. Traz o indicador de espaços de descompressão (id 2.150) e cita as UFs que cumpriram a meta de 10% do primeiro ano. Os números diferem dos do II Informe, porque o período e a base são outros.",
+    fonteUrl: "https://www.cnj.jus.br/informe-pena-justa-ago-2025/",
+    nota: "Fica só como link. Conferido em 09/10/2026.",
+  },
+  {
     id: "caderno-orientador",
     titulo: "Caderno Orientador para os planos estaduais e distrital",
     orgao: "CNJ",
