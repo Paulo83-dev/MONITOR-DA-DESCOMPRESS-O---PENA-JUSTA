@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "validar": "tsx scripts/validar-layouts.ts",
-    "gerar:mapa": "node scripts/gerar-mapa.mjs"
+    "gerar:mapa": "node scripts/gerar-mapa.mjs",
+    "gerar:icones": "node scripts/gerar-icones.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
