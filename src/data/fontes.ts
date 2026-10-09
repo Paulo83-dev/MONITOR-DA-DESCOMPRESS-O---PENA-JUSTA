@@ -26,6 +26,12 @@ export const FONTES = {
     url: "https://www.cnj.jus.br/wp-content/uploads/2026/08/pena-justa-ii-informe-stf.pdf",
     data: "2026-08",
   },
+  ibgeMalhas: {
+    titulo: "Malhas geográficas: limites das Unidades da Federação",
+    orgao: "IBGE",
+    url: "https://servicodados.ibge.gov.br/api/docs/malhas?versao=3",
+    nota: "Acessado em 09/10/2026. Os contornos foram simplificados e redesenhados em SVG para o mapa do site.",
+  },
   estruturaPlano: {
     titulo: "Estrutura do plano Pena Justa",
     orgao: "CNJ",

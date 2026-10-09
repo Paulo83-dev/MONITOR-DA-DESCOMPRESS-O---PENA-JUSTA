@@ -44,9 +44,6 @@ export type UF = {
   sigla: string;
   nome: string;
   regiao: Regiao;
-  /** Posição na grade do mapa (coluna, linha). */
-  col: number;
-  row: number;
   situacao: Situacao;
   resumo: string;
   numeros?: { rotulo: string; valor: string }[];
@@ -58,12 +55,12 @@ const SEM_INFO =
 const INFORMOU =
   "Informou ao CNJ que tem espaços de descompressão nos estabelecimentos prisionais, mas não enviou documentos que comprovem.";
 
-function semInfo(sigla: string, nome: string, regiao: Regiao, col: number, row: number): UF {
-  return { sigla, nome, regiao, col, row, situacao: "sem_informacao", resumo: SEM_INFO, fontes: [FONTES.informe2] };
+function semInfo(sigla: string, nome: string, regiao: Regiao): UF {
+  return { sigla, nome, regiao, situacao: "sem_informacao", resumo: SEM_INFO, fontes: [FONTES.informe2] };
 }
-function informou(sigla: string, nome: string, regiao: Regiao, col: number, row: number, extra?: Partial<UF>): UF {
+function informou(sigla: string, nome: string, regiao: Regiao, extra?: Partial<UF>): UF {
   return {
-    sigla, nome, regiao, col, row,
+    sigla, nome, regiao,
     situacao: "informado",
     resumo: INFORMOU,
     fontes: [FONTES.informe2],
@@ -72,21 +69,21 @@ function informou(sigla: string, nome: string, regiao: Regiao, col: number, row:
 }
 
 export const UFS: UF[] = [
-  semInfo("RR", "Roraima", "Norte", 2, 0),
-  semInfo("AP", "Amapá", "Norte", 3, 0),
-  informou("AM", "Amazonas", "Norte", 1, 1),
-  semInfo("PA", "Pará", "Norte", 2, 1),
-  semInfo("MA", "Maranhão", "Nordeste", 3, 1),
-  semInfo("PI", "Piauí", "Nordeste", 4, 1),
+  semInfo("RR", "Roraima", "Norte"),
+  semInfo("AP", "Amapá", "Norte"),
+  informou("AM", "Amazonas", "Norte"),
+  semInfo("PA", "Pará", "Norte"),
+  semInfo("MA", "Maranhão", "Nordeste"),
+  semInfo("PI", "Piauí", "Nordeste"),
   {
-    sigla: "CE", nome: "Ceará", regiao: "Nordeste", col: 5, row: 1,
+    sigla: "CE", nome: "Ceará", regiao: "Nordeste",
     situacao: "documentado",
     resumo:
       "Informou ter espaços de descompressão e enviou documentos. Segundo o II Informe, a documentação do Ceará evidencia, de alguma forma, a existência desses espaços. O Ceará consta entre as UFs que contribuíram para o indicador nacional.",
     fontes: [FONTES.informe2],
   },
   {
-    sigla: "RN", nome: "Rio Grande do Norte", regiao: "Nordeste", col: 6, row: 1,
+    sigla: "RN", nome: "Rio Grande do Norte", regiao: "Nordeste",
     situacao: "em_implantacao",
     resumo:
       "Não está entre as UFs que informaram ter espaços no Ano 1. Em setembro de 2026 foram publicados seis contratos para equipar 15 salas de descompressão em unidades prisionais estaduais, para descanso dos policiais penais nos intervalos dos plantões.",
@@ -97,27 +94,27 @@ export const UFS: UF[] = [
     ],
     fontes: [FONTES.agoraRN, FONTES.informe2],
   },
-  informou("AC", "Acre", "Norte", 0, 2, {
+  informou("AC", "Acre", "Norte", {
     resumo:
       INFORMOU +
       " O governo do Acre divulgou salas de descompressão, inclusive no presídio feminino de Rio Branco, e afirma ter salas em 50% dos presídios. Esses dados são do próprio estado e não foram conferidos no texto original.",
     numeros: [{ rotulo: "Presídios com sala (dado do estado)", valor: "50%" }],
     fontes: [FONTES.informe2, FONTES.acDivisaoServidor, FONTES.acSalaRioBranco],
   }),
-  semInfo("RO", "Rondônia", "Norte", 1, 2),
-  semInfo("MT", "Mato Grosso", "Centro-Oeste", 2, 2),
-  semInfo("TO", "Tocantins", "Norte", 3, 2),
-  semInfo("BA", "Bahia", "Nordeste", 4, 2),
-  semInfo("PE", "Pernambuco", "Nordeste", 5, 2),
-  semInfo("PB", "Paraíba", "Nordeste", 6, 2),
-  semInfo("MS", "Mato Grosso do Sul", "Centro-Oeste", 2, 3),
-  semInfo("GO", "Goiás", "Centro-Oeste", 3, 3),
-  informou("DF", "Distrito Federal", "Centro-Oeste", 4, 3),
-  semInfo("AL", "Alagoas", "Nordeste", 5, 3),
-  informou("SE", "Sergipe", "Nordeste", 6, 3),
-  informou("PR", "Paraná", "Sul", 2, 4),
+  semInfo("RO", "Rondônia", "Norte"),
+  semInfo("MT", "Mato Grosso", "Centro-Oeste"),
+  semInfo("TO", "Tocantins", "Norte"),
+  semInfo("BA", "Bahia", "Nordeste"),
+  semInfo("PE", "Pernambuco", "Nordeste"),
+  semInfo("PB", "Paraíba", "Nordeste"),
+  semInfo("MS", "Mato Grosso do Sul", "Centro-Oeste"),
+  semInfo("GO", "Goiás", "Centro-Oeste"),
+  informou("DF", "Distrito Federal", "Centro-Oeste"),
+  semInfo("AL", "Alagoas", "Nordeste"),
+  informou("SE", "Sergipe", "Nordeste"),
+  informou("PR", "Paraná", "Sul"),
   {
-    sigla: "SP", nome: "São Paulo", regiao: "Sudeste", col: 3, row: 4,
+    sigla: "SP", nome: "São Paulo", regiao: "Sudeste",
     situacao: "documentado",
     resumo:
       "Enviou documentos, e o II Informe diz que a documentação de São Paulo evidencia, de alguma forma, a existência dos espaços. No plano estadual, o estado afirma que 55,19% dos estabelecimentos já têm espaço de descompressão para os servidores. Em agosto de 2025, o CDP de Vila Independência inaugurou uma sala de cerca de 22 m².",
@@ -128,16 +125,16 @@ export const UFS: UF[] = [
     fontes: [FONTES.informe2, FONTES.matrizSP, FONTES.sapVila],
   },
   {
-    sigla: "MG", nome: "Minas Gerais", regiao: "Sudeste", col: 4, row: 4,
+    sigla: "MG", nome: "Minas Gerais", regiao: "Sudeste",
     situacao: "documentado",
     resumo:
       "Informou ter espaços e enviou documentos. O II Informe é inconsistente sobre Minas Gerais: o texto diz que só as documentações do Ceará e de São Paulo evidenciam a existência dos espaços, mas a tabela final lista Ceará e Minas Gerais como UFs que contribuíram para o indicador.",
     fontes: [FONTES.informe2],
   },
-  semInfo("ES", "Espírito Santo", "Sudeste", 5, 4),
-  semInfo("SC", "Santa Catarina", "Sul", 2, 5),
-  semInfo("RJ", "Rio de Janeiro", "Sudeste", 4, 5),
-  semInfo("RS", "Rio Grande do Sul", "Sul", 2, 6),
+  semInfo("ES", "Espírito Santo", "Sudeste"),
+  semInfo("SC", "Santa Catarina", "Sul"),
+  semInfo("RJ", "Rio de Janeiro", "Sudeste"),
+  semInfo("RS", "Rio Grande do Sul", "Sul"),
 ];
 
 export const UFS_ORDENADAS = [...UFS].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));

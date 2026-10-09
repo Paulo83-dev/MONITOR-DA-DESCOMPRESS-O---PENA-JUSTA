@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "validar": "tsx scripts/validar-layouts.ts"
+    "validar": "tsx scripts/validar-layouts.ts",
+    "gerar:mapa": "node scripts/gerar-mapa.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",

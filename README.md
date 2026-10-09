@@ -40,6 +40,7 @@ Os dados ficam em arquivos TypeScript, sem banco, e o histórico do Git mostra q
 | Arquivo | O que tem |
 |---|---|
 | `src/data/ufs.ts` | Situação de cada UF no mapa, números e fontes. Atualize `ATUALIZADO_EM` ao conferir. |
+| `src/data/mapa-uf.ts` | **Gerado**: contornos dos estados no mapa, a partir das malhas do IBGE. Não edite à mão; para refazer, rode `npm run gerar:mapa`. |
 | `src/data/novidades.ts` | Linha do tempo. |
 | `src/data/itens.ts` | Móveis da sala 3D: função, fontes, preços de referência. |
 | `src/data/layouts.ts` | Posição dos móveis em cada tamanho de sala. Depois de mexer, rode `npm run validar`. |
