@@ -49,3 +49,6 @@ next-env.d.ts
 
 # log do servidor de desenvolvimento
 .next-dev.log
+
+# briefing da sessão da sala 3D (só no computador, fora do repositório)
+/docs/briefing-sala-3d.md
