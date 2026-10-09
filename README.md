@@ -26,8 +26,12 @@ Antes de enviar mudanças:
 
 ```bash
 npm run lint
+npm run validar
 npm run build
 ```
+
+`npm run validar` confere a planta dos três tamanhos da sala 3D em todas as combinações de áreas: móveis sem
+sobreposição, folgas de uso, abertura da porta, giro de 1,50 m na entrada e rota livre de 0,90 m até cada móvel.
 
 ## Como atualizar os dados do monitor
 
@@ -38,7 +42,7 @@ Os dados ficam em arquivos TypeScript, sem banco, e o histórico do Git mostra q
 | `src/data/ufs.ts` | Situação de cada UF no mapa, números e fontes. Atualize `ATUALIZADO_EM` ao conferir. |
 | `src/data/novidades.ts` | Linha do tempo. |
 | `src/data/itens.ts` | Móveis da sala 3D: função, fontes, preços de referência. |
-| `src/data/layouts.ts` | Posição dos móveis em cada tamanho de sala. |
+| `src/data/layouts.ts` | Posição dos móveis em cada tamanho de sala. Depois de mexer, rode `npm run validar`. |
 | `src/data/documentos.ts` | Lista de downloads (PDFs em `public/documentos/`). |
 | `src/data/fontes.ts` | Cadastro das fontes citadas. |
 

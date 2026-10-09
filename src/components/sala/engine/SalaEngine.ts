@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { ITEM_POR_ID, type AreaId, type ItemId } from "@/data/itens";
 import { LAYOUTS, type Instancia, type Layout, type Parede, type Tamanho } from "@/data/layouts";
+import { validarLayout } from "@/lib/sala/validarLayout";
 import { criarMateriais, type Mats } from "./materiais";
 import { criarFabrica, PE_DIREITO, type Fabrica } from "./moveis";
 
@@ -242,8 +243,11 @@ export class SalaEngine {
       this.camera.position.copy(p);
       this.camera.lookAt(this.controls.target.x, 1.2, this.controls.target.z);
     } else {
-      this.camera.position.set(W / 2 - 1.1, 1.62, D / 2 - 0.9);
-      this.camera.lookAt(-W * 0.2, 1.1, -D * 0.3);
+      // Logo depois da porta, olhando para dentro da sala.
+      const porta = this.layout.instancias.find((i) => i.item === "porta");
+      const px = porta ? porta.x - 0.2 : W / 2 - 1.1;
+      this.camera.position.set(px, 1.62, D / 2 - 0.9);
+      this.camera.lookAt(px - W * 0.35, 1.1, -D * 0.25);
     }
     const e = new THREE.Euler().setFromQuaternion(this.camera.quaternion, "YXZ");
     this.walk.yaw = e.y;
@@ -277,34 +281,13 @@ export class SalaEngine {
     else this.walk.keys.delete(dir);
   }
 
-  /** Lista móveis que se sobrepõem ou saem da sala. Serve para ajustar os layouts. */
+  /**
+   * Confere a planta com as áreas ligadas: sobreposição, folgas, porta, visada
+   * da TV e rota de 0,90 m (ver `npm run validar`). Serve para ajustar os layouts.
+   */
   verificarLayout() {
-    const { largura: W, profundidade: D } = this.layout;
-    const caixas = this.movs
-      .filter((m) => m.item)
-      .map((m) => ({ nome: m.item as string, box: new THREE.Box3().setFromObject(m.obj), obj: m.obj }));
-    const ignora = new Set(["luz", "wifi", "ar", "porta"]);
-    const problemas: string[] = [];
-    for (let i = 0; i < caixas.length; i++) {
-      const a = caixas[i];
-      if (a.nome !== "luz") {
-        const b = a.box;
-        const fora = Math.max(-W / 2 - b.min.x, b.max.x - W / 2, -D / 2 - b.min.z, b.max.z - D / 2);
-        if (fora > 0.06) problemas.push(`${a.nome} (${fmt(a.obj.position.x)}, ${fmt(a.obj.position.z)}) sai da sala em ${fmt(fora)} m`);
-      }
-      for (let j = i + 1; j < caixas.length; j++) {
-        const c = caixas[j];
-        if (ignora.has(a.nome) || ignora.has(c.nome)) continue;
-        if ((a.nome === "tv" && c.nome === "wifi") || (a.nome === "wifi" && c.nome === "tv")) continue;
-        const dx = Math.min(a.box.max.x, c.box.max.x) - Math.max(a.box.min.x, c.box.min.x);
-        const dz = Math.min(a.box.max.z, c.box.max.z) - Math.max(a.box.min.z, c.box.min.z);
-        const dy = Math.min(a.box.max.y, c.box.max.y) - Math.max(a.box.min.y, c.box.min.y);
-        if (dx > 0.06 && dz > 0.06 && dy > 0.1) {
-          problemas.push(`${a.nome} (${fmt(a.obj.position.x)}, ${fmt(a.obj.position.z)}) x ${c.nome} (${fmt(c.obj.position.x)}, ${fmt(c.obj.position.z)}): ${fmt(dx)} x ${fmt(dz)} m`);
-        }
-      }
-    }
-    return problemas;
+    const r = validarLayout(this.layout, this.areas);
+    return [...r.problemas, ...r.avisos.map((a) => `aviso: ${a}`)];
   }
 
   dispose() {
@@ -499,6 +482,9 @@ export class SalaEngine {
       case "ar": return f.ar();
       case "porta": return f.porta();
       case "luz": return f.luz();
+      case "sofacama": return f.sofacama();
+      case "rede": return f.rede(inst.variante ? Number(inst.variante) : undefined);
+      case "recarga": return f.recarga();
       default: return null;
     }
   }
@@ -544,16 +530,42 @@ export class SalaEngine {
     const c = V();
     lista.forEach((m) => c.add(m.obj.position));
     c.multiplyScalar(1 / lista.length);
-    let dx = -c.x, dz = -c.z;
-    const len = Math.hypot(dx, dz);
-    if (len < 0.6) { dx = 0; dz = 1; } else { dx /= len; dz /= len; }
-    const dist = 3.1;
-    const pos = V(clamp(c.x + dx * dist, -W / 2 + 0.3, W / 2 - 0.3), 1.65, clamp(c.z + dz * dist, -D / 2 + 0.3, D / 2 - 0.3));
-    return { pos, tgt: V(c.x, 0.7, c.z) };
+    const tgt = V(c.x, 0.7, c.z);
+    return { pos: this.melhorPose(lista, tgt, 3.1, 1.65, V(-c.x, 0, -c.z)), tgt };
+  }
+
+  /**
+   * Escolhe de que lado olhar: testa oito direções em volta do alvo e fica com
+   * a que deixa mais móveis à vista. O biombo do cochilo, por exemplo, esconde
+   * o canto de quem olha do meio da sala, então a vista vem de dentro dele.
+   */
+  private melhorPose(alvos: Mov[], tgt: THREE.Vector3, dist: number, altura: number, preferida: THREE.Vector3) {
+    const { largura: W, profundidade: D } = this.layout;
+    if (preferida.lengthSq() > 1e-6) preferida.normalize();
+    const centros = alvos.map((m) => new THREE.Box3().setFromObject(m.obj).getCenter(V()));
+    let melhor = { pos: V(tgt.x, altura, tgt.z + dist), nota: Infinity };
+    for (let k = 0; k < 8; k++) {
+      const a = (k / 8) * Math.PI * 2;
+      const d = V(Math.sin(a), 0, Math.cos(a));
+      const pos = V(clamp(tgt.x + d.x * dist, -W / 2 + 0.3, W / 2 - 0.3), altura, clamp(tgt.z + d.z * dist, -D / 2 + 0.3, D / 2 - 0.3));
+      let nota = Math.max(0, dist * 0.6 - Math.hypot(pos.x - tgt.x, pos.z - tgt.z)) - d.dot(preferida) * 0.3;
+      alvos.forEach((m, i) => {
+        this.dir.subVectors(centros[i], pos);
+        const longe = this.dir.length();
+        this.ray.set(pos, this.dir.normalize());
+        this.ray.far = longe;
+        const hit = this.primeiroAcerto(this.ray.intersectObjects(this.occluders, false));
+        if (!hit || hit.distance > longe - 0.25) return;
+        let o: THREE.Object3D | null = hit.object;
+        while (o && !o.userData.itemId) o = o.parent;
+        if (o !== m.obj) nota += 1;
+      });
+      if (nota < melhor.nota) melhor = { pos, nota };
+    }
+    return melhor.pos;
   }
 
   private poseDoItem(m: Mov): { pos: THREE.Vector3; tgt: THREE.Vector3 } {
-    const { largura: W, profundidade: D } = this.layout;
     const it = m.item ? ITEM_POR_ID[m.item] : null;
     const p = m.obj.position;
     const tgt = V(p.x, (it?.alturaMarcador ?? 1) * 0.55, p.z);
@@ -563,9 +575,8 @@ export class SalaEngine {
     else if (m.parede === "W") d = V(1, 0, 0);
     else if (m.parede === "E") d = V(-1, 0, 0);
     if (d.length() < 0.5) d = V(0, 0, 1);
-    d.normalize();
     const dist = m.item === "tv" || m.item === "armarios" || m.item === "estante" || m.item === "plantas" ? 2.8 : 2.2;
-    const pos = V(clamp(p.x + d.x * dist, -W / 2 + 0.3, W / 2 - 0.3), 1.5, clamp(p.z + d.z * dist, -D / 2 + 0.3, D / 2 - 0.3));
+    const pos = this.melhorPose([m], tgt, dist, 1.5, d);
     return { pos, tgt };
   }
 

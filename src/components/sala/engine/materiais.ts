@@ -131,6 +131,29 @@ function texturaTV(anisotropia: number) {
   }, anisotropia);
 }
 
+/** Pano de rede listrado. As listras correm no comprimento (eixo u). */
+function texturaRede(anisotropia: number) {
+  return texturaCanvas(256, 512, (x, w, h) => {
+    const faixas = ["#E9DEC6", "#C0533A", "#E9DEC6", "#E2A93B", "#E9DEC6", "#3F7F6B", "#E9DEC6", "#C0533A", "#E9DEC6"];
+    const larguras = [3, 1, 0.5, 1, 0.5, 1.4, 0.5, 1, 3];
+    const total = larguras.reduce((a, b) => a + b, 0);
+    let y = 0;
+    faixas.forEach((cor, i) => {
+      const fh = (larguras[i] / total) * h;
+      x.fillStyle = cor;
+      x.fillRect(0, y, w, fh + 1);
+      y += fh;
+    });
+    x.strokeStyle = "rgba(60,40,25,.08)";
+    for (let i = 0; i < w; i += 4) {
+      x.beginPath();
+      x.moveTo(i, 0);
+      x.lineTo(i, h);
+      x.stroke();
+    }
+  }, anisotropia);
+}
+
 export type Mats = ReturnType<typeof criarMateriais>;
 
 export function criarMateriais(anisotropia: number, repetirPiso: [number, number]) {
@@ -171,6 +194,8 @@ export function criarMateriais(anisotropia: number, repetirPiso: [number, number
     bookInst: std(0xffffff, { roughness: 0.75 }),
     water: std(0x9cc7e6, { roughness: 0.08, transparent: true, opacity: 0.6 }),
     chess: std(0xffffff, { map: texturaTabuleiro(anisotropia), roughness: 0.45 }),
+    rede: std(0xffffff, { map: texturaRede(anisotropia), roughness: 0.95, side: THREE.DoubleSide }),
+    rope: std(0xd9ccb0, { roughness: 0.9 }),
     piece: std(0xf0ede6, { roughness: 0.4 }),
     pieceDark: std(0x231c17, { roughness: 0.4 }),
     screen: new THREE.MeshStandardMaterial({ map: tv, emissive: 0xffffff, emissiveMap: tv, emissiveIntensity: 0.85, roughness: 0.25 }),

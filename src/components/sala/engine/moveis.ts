@@ -346,17 +346,95 @@ export function criarFabrica(mats: Mats) {
     return g;
   }
 
-  /** Frente para -z, na parede S. */
+  /** Frente para -z, na parede S. Folha de 0,88 x 2,10 m (vão livre da NBR 9050). */
   function porta() {
     const g = new THREE.Group();
-    B(0.88, 2.08, 0.045, mats.walnut, 0, 1.04, 0, g, 0.006);
-    [-1, 1].forEach((s) => B(0.06, 2.14, 0.06, mats.white, s * 0.47, 1.07, 0.005, g));
-    B(1.0, 0.06, 0.06, mats.white, 0, 2.11, 0.005, g);
+    B(0.88, 2.1, 0.045, mats.walnut, 0, 1.05, 0, g, 0.006);
+    [-1, 1].forEach((s) => B(0.06, 2.16, 0.06, mats.white, s * 0.47, 1.08, 0.005, g));
+    B(1.0, 0.06, 0.06, mats.white, 0, 2.13, 0.005, g);
     B(0.13, 0.02, 0.02, mats.steel, -0.3, 1.02, -0.045, g, 0.008);
     C(0.025, 0.025, 0.02, mats.steel, -0.35, 1.02, -0.03, g, 14).rotation.x = Math.PI / 2;
     B(0.075, 0.17, 0.025, mats.black, -0.35, 1.2, -0.035, g, 0.006);
     const pad = mesh(new THREE.PlaneGeometry(0.05, 0.085), mats.keypad, -0.35, 1.215, -0.0485, g, false);
     pad.rotation.y = Math.PI;
+    return g;
+  }
+
+  /** Sofá-cama tipo futon, fechado. Frente para -z (o encosto fica em +z). Largura de 1,9 m. */
+  function sofacama() {
+    const g = new THREE.Group();
+    const w = 1.9, d = 0.9;
+    [[-0.88, -0.38], [0.88, -0.38], [-0.88, 0.38], [0.88, 0.38]].forEach(([fx, fz]) => C(0.028, 0.024, 0.08, mats.walnut, fx, 0.04, fz, g, 10));
+    B(w, 0.14, d - 0.04, mats.oakDark, 0, 0.15, 0, g, 0.02);
+    [-1, 1].forEach((s) => B(0.06, 0.42, d - 0.04, mats.oak, s * (w / 2 - 0.03), 0.34, 0, g, 0.015));
+    B(w - 0.14, 0.17, 0.66, mats.corino, 0, 0.3, -0.08, g, 0.06);
+    const enc = B(w - 0.14, 0.6, 0.17, mats.corino, 0, 0.62, 0.3, g, 0.06);
+    enc.rotation.x = 0.24;
+    const travesseiro = B(0.46, 0.13, 0.3, mats.sage, -0.58, 0.44, 0.08, g, 0.05);
+    travesseiro.rotation.set(-0.5, 0.15, 0);
+    B(0.5, 0.07, 0.38, mats.ochre, 0.55, 0.42, -0.05, g, 0.02);
+    return g;
+  }
+
+  /**
+   * Rede presa em dois ganchos de parede. O eixo x local liga os ganchos;
+   * `vao` é a distância entre eles (a rede fica na diagonal de um canto).
+   */
+  function rede(vao = 3.0) {
+    const g = new THREE.Group();
+    const semi = 1.1, meio = 0.45, baixo = 0.5, ponta = 1.02, gancho = 1.75;
+    const nu = 32, nv = 10;
+    const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+    for (let i = 0; i <= nu; i++) {
+      const u = -1 + (2 * i) / nu;
+      const larg = meio * Math.sqrt(Math.max(0, 1 - u * u)) + 0.03;
+      for (let j = 0; j <= nv; j++) {
+        const v = -1 + (2 * j) / nv;
+        pos.push(u * semi, baixo + (ponta - baixo) * u * u + 0.13 * v * v * (1 - u * u), v * larg);
+        uv.push(i / nu, j / nv);
+      }
+    }
+    for (let i = 0; i < nu; i++) {
+      for (let j = 0; j < nv; j++) {
+        const a = i * (nv + 1) + j, b = a + nv + 1;
+        idx.push(a, b, a + 1, b, b + 1, a + 1);
+      }
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+    geo.setIndex(idx);
+    geo.computeVertexNormals();
+    mesh(geo, mats.rede, 0, 0, 0, g);
+    [-1, 1].forEach((s) => {
+      const fim = V(s * (semi + 0.02), ponta, 0);
+      const gx = s * vao / 2;
+      [-0.04, 0, 0.04].forEach((dz) => rod(V(fim.x, fim.y, dz), V(gx - s * 0.05, gancho - 0.04, 0), 0.006, mats.rope, g, 6));
+      B(0.02, 0.12, 0.08, mats.steel, gx - s * 0.01, gancho, 0, g, 0.006);
+      const anel = mesh(new THREE.TorusGeometry(0.03, 0.007, 8, 16), mats.steel, gx - s * 0.05, gancho - 0.02, 0, g);
+      anel.rotation.y = Math.PI / 2;
+    });
+    return g;
+  }
+
+  /** Mesa lateral com base de carregamento e dois celulares. Frente para -z. */
+  function recarga() {
+    const g = new THREE.Group();
+    C(0.17, 0.19, 0.02, mats.metal, 0, 0.01, 0, g, 24);
+    C(0.025, 0.025, 0.52, mats.metal, 0, 0.28, 0, g, 12);
+    B(0.45, 0.03, 0.45, mats.oak, 0, 0.555, 0, g, 0.012);
+    B(0.28, 0.045, 0.13, mats.black, 0, 0.592, 0.02, g, 0.012);
+    B(0.22, 0.006, 0.004, mats.ledGreen, 0, 0.594, -0.046, g);
+    [-0.065, 0.065].forEach((sx) => {
+      const cel = new THREE.Group();
+      cel.position.set(sx, 0.69, 0.03);
+      cel.rotation.x = 0.28;
+      g.add(cel);
+      B(0.075, 0.155, 0.009, mats.black, 0, 0, 0, cel, 0.006);
+      const tela = mesh(new THREE.PlaneGeometry(0.065, 0.135), mats.display, 0, 0, -0.0051, cel, false);
+      tela.rotation.y = Math.PI;
+    });
+    rod(V(0, 0.58, 0.09), V(0, 0.05, 0.12), 0.004, mats.black, g, 6);
     return g;
   }
 
@@ -368,7 +446,7 @@ export function criarFabrica(mats: Mats) {
     return g;
   }
 
-  return { sofa, poltrona, tv, wifi, pufe, jogos, esteira, bike, massagem, estante, luminaria, plantas, armarios, bebedouro, copa, biombo, ar, porta, luz };
+  return { sofa, poltrona, tv, wifi, pufe, jogos, esteira, bike, massagem, estante, luminaria, plantas, armarios, bebedouro, copa, biombo, ar, porta, luz, sofacama, rede, recarga };
 }
 
 export type Fabrica = ReturnType<typeof criarFabrica>;

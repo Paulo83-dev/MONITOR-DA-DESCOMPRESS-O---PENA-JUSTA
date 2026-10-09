@@ -91,6 +91,13 @@ export const FONTES = {
     url: "https://agencia.ac.gov.br/presidio-feminino-inaugura-sala-de-descompressao-em-rio-branco/",
     nota: "Informação obtida em trecho de busca. O portal estava fora do ar no período eleitoral e o texto completo não foi conferido.",
   },
+  lawOfficerHampton: {
+    titulo: "Virginia police using quiet rooms to decompress and rest",
+    orgao: "Law Officer",
+    url: "https://www.lawofficer.com/virginia-police-using-quiet-rooms-to-decompress-and-rest/",
+    data: "2017-01-28",
+    nota: "Salas de descanso da polícia de Hampton (Virgínia, EUA), não de sistema prisional.",
+  },
   acDivisaoServidor: {
     titulo: "Divisão de Assistência ao Servidor Penitenciário promove o bem-estar de quem cuida do Sistema Penitenciário",
     orgao: "Agência de Notícias do Acre",
