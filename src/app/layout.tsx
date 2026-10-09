@@ -3,6 +3,7 @@ import { Archivo, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import Contador from "@/components/Contador";
+import Logo from "@/components/Logo";
 import NavLinks from "@/components/NavLinks";
 import { ATUALIZADO_EM } from "@/data/ufs";
 import { NAVEGACAO, SITE } from "@/data/site";
@@ -35,8 +36,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <header className="cabecalho">
           <div className="container">
             <Link href="/" className="marca">
-              {SITE.nome}
-              <small>Pena Justa · indicador 2.5.1.1.1.1</small>
+              <Logo />
+              <span>
+                {SITE.nome}
+                <small>Pena Justa · indicador 2.5.1.1.1.1</small>
+              </span>
             </Link>
             <nav className="nav" aria-label="Principal">
               <Suspense
