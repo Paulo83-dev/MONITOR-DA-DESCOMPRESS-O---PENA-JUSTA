@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Compartilhar from "@/components/Compartilhar";
 import IndicadorNacional from "@/components/IndicadorNacional";
 import MapaUF from "@/components/MapaUF";
 import { NOVIDADES } from "@/data/novidades";
@@ -15,6 +16,7 @@ export default function Painel() {
           O Pena Justa manda criar espaços de descompressão nos estabelecimentos prisionais. Este painel reúne o que já foi informado, o que foi comprovado e o que foi noticiado, com a fonte de cada dado.
         </p>
         <IndicadorNacional />
+        <Compartilhar />
       </section>
 
       <section className="secao" aria-labelledby="h-mapa">

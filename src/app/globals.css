@@ -138,6 +138,8 @@ td.codigo { font-family: var(--font-mono), monospace; font-size: 0.875rem; white
 /* ---------- painel (início) ---------- */
 .hero { padding-block: clamp(2.25rem, 5vw, 3.75rem) 2rem; display: grid; gap: 1.1rem; }
 .hero .lead { color: var(--fg); }
+.compartilhar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.75rem; padding-top: 0.25rem; }
+.compartilhar .rotulo { flex-basis: 100%; margin: 0; }
 .indicador { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem 2.25rem; align-items: end; padding: 1.5rem 0 0.5rem; border-top: 2px solid var(--fg); }
 .indicador-numero { display: grid; gap: 0.4rem; }
 .indicador-numero b { font: 780 clamp(3.2rem, 8vw, 5.2rem)/0.95 var(--font-display), Arial, sans-serif; font-stretch: 70%; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }

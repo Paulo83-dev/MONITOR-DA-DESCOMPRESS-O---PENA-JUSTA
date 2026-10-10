@@ -7,6 +7,7 @@ import Logo from "@/components/Logo";
 import NavLinks from "@/components/NavLinks";
 import { ATUALIZADO_EM } from "@/data/ufs";
 import { NAVEGACAO, SITE } from "@/data/site";
+import { linkWhatsApp } from "@/lib/compartilhar";
 import { dataCurta } from "@/lib/formato";
 import "./globals.css";
 
@@ -15,10 +16,11 @@ const corpo = Source_Serif_4({ subsets: ["latin"], variable: "--font-body", disp
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: { default: SITE.nome, template: `%s · ${SITE.nome}` },
   description: SITE.descricao,
   applicationName: SITE.nome,
-  openGraph: { title: SITE.nome, description: SITE.descricao, locale: "pt_BR", type: "website" },
+  openGraph: { title: SITE.nome, description: SITE.descricao, siteName: SITE.nome, locale: "pt_BR", type: "website" },
 };
 
 export const viewport: Viewport = {
@@ -64,6 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <ul>
               <li><Link href="/regras">Regras do fórum</Link></li>
               <li><Link href="/privacidade">Privacidade</Link></li>
+              <li><a href={linkWhatsApp()} target="_blank" rel="noopener noreferrer">Compartilhar no WhatsApp</a></li>
               <li><a href={SITE.repositorio} target="_blank" rel="noopener noreferrer">Código e dados no GitHub</a></li>
             </ul>
             <p>
